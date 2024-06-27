@@ -1,0 +1,52 @@
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 16px;
+    text-align: left;
+    min-width: "1200px";
+}
+
+.table th,
+.table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    font-size: large;
+}
+
+.table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.divider {
+    border-bottom: "1px solid lightgray";
+    width: "100%";
+    margin-bottom: "20px";
+}
+
+.button-container {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.approve {
+    background-color: #144691;
+    color: white;
+}
+
+.disapprove {
+    background-color: #ab0f11;
+    color: white;
+}

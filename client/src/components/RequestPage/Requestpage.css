@@ -1,0 +1,257 @@
+/* Requestpage.css */
+
+.CheckContainer {
+    display: flex;
+    align-items: center;
+    margin-left: 30px;
+}
+
+.FormContainer {
+    background-color: #fafafa;
+    padding: 50px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.FormSection {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    background-color: #fafafa;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.FormGroup {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    margin-bottom: 20px;
+}
+
+.Label {
+    font-size: 16px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.Input {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    height: 50px;
+}
+
+.PageContainer {
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.grid-container {
+    display: grid;
+    justify-content: center;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto auto auto auto auto auto auto;
+    gap: 20px;
+    position: relative;
+}
+
+.logo-container {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.revision-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    text-align: right;
+    font-size: 20px;
+}
+
+.requestForm {
+    grid-row-start: 1;
+    grid-column: 1 / span 3;
+    justify-items: center;
+    display: grid;
+    grid-template-columns: auto auto;
+    margin: 0;
+    padding: 0;
+}
+
+.instructions {
+    font-size: 16px;
+    margin-left: 25px;
+}
+
+.facilities-checklist-header {
+    grid-row-start: 3;
+    grid-column: 1 / span 3;
+    text-align: left;
+    margin: 0;
+    padding: 0;
+    margin-left: 25px;
+}
+
+.school-building {
+    grid-row-start: 4;
+    font-size: 16px;
+    margin: 0;
+    padding: 0;
+    margin-left: 25px;
+}
+
+.school-building-grid {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: 50px 50px 50px;
+    align-content: center;
+    align-items: center;
+}
+
+.others {
+    grid-row-start: 4;
+    grid-column-start: 3;
+    font-size: 16px;
+    margin: 0;
+    padding: 0;
+    margin-left: 25px;
+}
+
+.others-grid {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: 50px 50px 50px 50px;
+    align-content: center;
+    align-items: center;
+}
+
+.admin-building {
+    grid-row-start: 4;
+    grid-column-start: 2;
+    font-size: 16px;
+    margin: 0;
+    padding: 0;
+    margin-left: 25px;
+}
+
+.admin-building-grid {
+    display: grid;
+    grid-template-columns: 150px auto;
+    grid-template-rows: 50px 50px 50px 50px;
+    align-content: center;
+    align-items: center;
+}
+
+.equipment-checklist-header {
+    grid-row-start: 3;
+    grid-column: 1 / span 3;
+    text-align: left;
+    margin: 0;
+    padding: 0;
+    margin-left: 25px;
+}
+
+.equipment-checklists {
+    grid-row-start: 6;
+    grid-column: 1 / span 3;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 20px;
+    margin-left: 25px;
+}
+
+.furniture,
+.audio-visual,
+.accessories,
+.sports-equipment,
+.others-equipment {
+    font-size: 16px;
+    margin: 0;
+    padding: 0;
+}
+
+.furniture ul,
+.audio-visual ul,
+.accessories ul {
+    margin-left: 20px;
+}
+
+.instructions-note {
+    font-size: 16px;
+    width: 300px;
+    grid-column: 3;
+}
+
+.remarks-header {
+    grid-row-start: 9;
+    grid-column: 1 / span 3;
+    text-align: left;
+    margin: 0;
+    padding: 0;
+    margin-left: 25px;
+}
+
+.remarks {
+    grid-row-start: 10;
+    grid-column: 1 / span 3;
+    padding: 10px 0;
+    margin-left: 25px;
+}
+
+.approval-section {
+    grid-row-start: 11;
+    grid-column: 1 / span 3;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 10px 0;
+    font-size: 16px;
+    margin-left: 25px;
+}
+
+.approval-section div {
+    border-bottom: 1px solid black;
+    padding: 8px 0;
+    width: 90%;
+}
+
+.divider-finish-button {
+    grid-row-start: 12;
+    grid-column: 1 / span 3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.divider {
+    border-bottom: 1px solid lightgray;
+    width: 95%;
+    margin-bottom: 20px;
+}
+
+.quantity-input {
+    width: 50px;
+    margin-left: 10px;
+}
+
+.finish-button {
+    background-color: #144691;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.finish-button:hover {
+    background-color: #ab0f11;
+    color: white;
+}

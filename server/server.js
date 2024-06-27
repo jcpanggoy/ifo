@@ -1,0 +1,211 @@
+const express = require("express");
+const mysql = require("mysql2");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const app = express();
+const port = 4002;
+
+app.use(cors());
+app.use(bodyParser.json());
+
+const db = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: "mcmhost",
+});
+
+db.connect((err) => {
+    if (err) {
+        console.error("Database connection failed: " + err.stack);
+        return;
+    }
+    console.log("Connected to database.");
+});
+
+app.post("/saveRequest", (req, res) => {
+    const {
+        requestorName,
+        dept,
+        purpose,
+        dateOfFiling,
+        dateOfUse,
+        timeOfUse,
+        schoolBuilding,
+        others,
+        adminBuilding,
+        furnitures,
+        quantities,
+        device,
+        cquantities,
+        telev,
+        tquantities,
+        micQty,
+        speakerQty,
+        accessoriesQty,
+        sportsEquipment,
+        otherEquipment,
+        status = "Pending", // Default status to "Pending" if not provided
+        remarks = "None", // Default remarks to "None" if not provided
+    } = req.body;
+
+    const filterObject = (obj) => {
+        return Object.fromEntries(
+            Object.entries(obj).filter(([key, value]) => value)
+        );
+    };
+
+    const filteredSchoolBuilding = filterObject(schoolBuilding);
+    const filteredOthers = filterObject(others);
+    const filteredAdminBuilding = filterObject(adminBuilding);
+    const filteredFurnitures = filterObject(furnitures);
+    const filteredQuantities = filterObject(quantities);
+    const filteredDevice = filterObject(device);
+    const filteredCQuantities = filterObject(cquantities);
+    const filteredTelev = filterObject(telev);
+    const filteredTQuantities = filterObject(tquantities);
+    const filteredMicQty = filterObject(micQty);
+    const filteredSpeakerQty = filterObject(speakerQty);
+    const filteredAccessoriesQty = filterObject(accessoriesQty);
+    const filteredSportsEquipment = filterObject(sportsEquipment);
+    const filteredOtherEquipment = filterObject(otherEquipment);
+
+    const sql = `
+        INSERT INTO request (
+            requestorName,
+            dept,
+            purpose,
+            dateOfFiling,
+            dateOfUse,
+            timeOfUse,
+            schoolBuilding,
+            others,
+            adminBuilding,
+            furnitures,
+            quantities,
+            device,
+            cquantities,
+            telev,
+            tquantities,
+            micQty,
+            speakerQty,
+            accessoriesQty,
+            sportsEquipment,
+            otherEquipment,
+            status,
+            remarks
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    const values = [
+        requestorName,
+        dept,
+        purpose,
+        dateOfFiling,
+        dateOfUse,
+        timeOfUse,
+        JSON.stringify(filteredSchoolBuilding),
+        JSON.stringify(filteredOthers),
+        JSON.stringify(filteredAdminBuilding),
+        JSON.stringify(filteredFurnitures),
+        JSON.stringify(filteredQuantities),
+        JSON.stringify(filteredDevice),
+        JSON.stringify(filteredCQuantities),
+        JSON.stringify(filteredTelev),
+        JSON.stringify(filteredTQuantities),
+        JSON.stringify(filteredMicQty),
+        JSON.stringify(filteredSpeakerQty),
+        JSON.stringify(filteredAccessoriesQty),
+        JSON.stringify(filteredSportsEquipment),
+        JSON.stringify(filteredOtherEquipment),
+        status,
+        remarks,
+    ];
+
+    db.query(sql, values, (err, results) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        res.status(201).json({ id: results.insertId, ...req.body });
+    });
+});
+
+// Endpoint to get requests
+app.get("/api/requests", (req, res) => {
+    db.query("SELECT * FROM request", (err, results) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        res.json(results);
+    });
+});
+
+app.post("/api/requests/:id/approve", (req, res) => {
+    const { id } = req.params;
+    const sql = `UPDATE request SET status = 'Approved', remarks = '' WHERE id = ?`;
+    db.query(sql, [id], (err, result) => {
+        if (err) return res.status(500).send(err);
+        res.json({ message: "Request approved", id });
+    });
+});
+
+app.post("/api/requests/:id/disapprove", (req, res) => {
+    const { id } = req.params;
+    const { remarks } = req.body;
+    const sql = `UPDATE request SET status = 'Disapproved', remarks = ? WHERE id = ?`;
+    db.query(sql, [remarks, id], (err, result) => {
+        if (err) return res.status(500).send(err);
+        res.json({ message: "Request disapproved", id });
+    });
+});
+
+app.get("/api/logs", (req, res) => {
+    let sql = "SELECT * FROM request";
+    const filters = [];
+
+    if (req.query.department) {
+        filters.push(`dept = '${req.query.department}'`);
+    }
+    if (req.query.statuses) {
+        const statuses = req.query.statuses.split(",");
+        filters.push(
+            `status IN (${statuses.map((status) => `'${status}'`).join(",")})`
+        );
+    }
+
+    if (filters.length > 0) {
+        sql += " WHERE " + filters.join(" AND ");
+    }
+
+    db.query(sql, (err, results) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        res.json(results);
+    });
+});
+
+app.get("/api/category_counts", (req, res) => {
+    const departmentQuery =
+        "SELECT dept as department, COUNT(*) as count FROM request GROUP BY dept";
+    const statusQuery = req.query.department
+        ? "SELECT status, COUNT(*) as count FROM request WHERE dept = ? GROUP BY status"
+        : "SELECT status, COUNT(*) as count FROM request GROUP BY status";
+
+    db.query(departmentQuery, (err, departmentResults) => {
+        if (err) return res.status(500).send(err);
+
+        db.query(statusQuery, [req.query.department], (err, statusResults) => {
+            if (err) return res.status(500).send(err);
+
+            res.json({
+                departments: departmentResults,
+                statuses: statusResults,
+            });
+        });
+    });
+});
+
+app.listen(port, () => {
+    console.log(`Server running on http://localhost:${port}`);
+});
