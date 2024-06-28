@@ -24,6 +24,7 @@ const AdminPage = () => {
     const [calendarActive, setCalendarActive] = useState(false);
     const [showCalendarModal, setShowCalendarModal] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
+    const [selectedDateRequests, setSelectedDateRequests] = useState([]);
 
     const openLogs = () => {
         setLogActive(true);
@@ -44,20 +45,24 @@ const AdminPage = () => {
     };
 
     const handleCalendarModal = () => {
-        setShowCalendarModal((prevState) => !prevState);
+        setShowCalendarModal(!showCalendarModal);
     };
 
-    const sendDataToParent = (date) => {
+    const sendDataToParent = (date, requests) => {
         setSelectedDate(date);
+        setSelectedDateRequests(requests);
         setShowCalendarModal(true);
-
-        console.log(date);
-        console.log(showCalendarModal);
-        console.log(selectedDate);
     };
 
     return (
         <Main>
+            {showCalendarModal && (
+                <CalendarModal
+                    handleCalendarModal={handleCalendarModal}
+                    requests={selectedDateRequests}
+                    selectedDate={selectedDate}
+                />
+            )}
             <MainContainer>
                 <SidebarComponent
                     openLogs={openLogs}
@@ -88,12 +93,6 @@ const AdminPage = () => {
                     {logsActive && <LogsComponent />}
                 </div>
             </MainContainer>
-            {showCalendarModal && (
-                <CalendarModal
-                    handleCalendarModal={handleCalendarModal}
-                    selectedDate={selectedDate}
-                />
-            )}
         </Main>
     );
 };

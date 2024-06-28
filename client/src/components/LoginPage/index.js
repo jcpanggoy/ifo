@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
-
+import axios from "axios";
+import RequestModal from "../RequestPage/RequestModal";
 import MCMLogo from "../../img/MMCM_Logo.svg";
 import MCMBg from "../../img/MMCM_Bg.jpg";
+import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
 
 const Body = styled.div`
     width: 100%;
@@ -53,21 +57,28 @@ const SidebarImgWrapper = styled.div`
 
 const Input = styled.input`
     padding: 12px;
-    width: 200px;
+    width: 250px;
     border-top: none;
     border-left: none;
     border-right: none;
     border-bottom: 1px solid;
+    border-radius: 10px;
+    margin-left: 10px;
 `;
 
 const InputWrapper = styled.div`
     display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: relative;
+    width: 100%;
 `;
 
 const InputContainer = styled.div`
     width: 100%;
     display: flex;
     margin-top: 40px;
+    margin-left: 150px;
     align-items: center;
     flex-direction: column;
     gap: 40px;
@@ -75,17 +86,19 @@ const InputContainer = styled.div`
 
 const Button = styled.button`
     width: 200px;
-    height: 50px;
+    height: 100px;
     padding: 12px;
-    background-color: transparent;
+    color: white;
+    background-color: #144691;
     border-top: none;
     border-left: none;
     border-right: none;
     border-bottom: none;
+    border-radius: 30px;
     cursor: pointer;
 
     &:hover {
-        background-color: black;
+        background-color: #ab0f11;
         color: white;
     }
 `;
@@ -127,12 +140,48 @@ const TicketButton = styled.button`
 `;
 
 const Label = styled.label`
-    position: absolute;
-    margin: 10px 0px 0px 4px;
+    margin-bottom: 4px;
+    font-size: 20px;
+    font-weight: bold;
+`;
+
+const Message = styled.div`
+    color: red;
     font-size: 14px;
 `;
 
+const Icon = styled(FontAwesomeIcon)`
+    position: absolute;
+    left: 20px;
+    top: 70%;
+    transform: translateY(-50%);
+    color: #999;
+`;
+
 const LoginPage = () => {
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [message, setMessage] = useState("");
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const navigate = useNavigate();
+
+    const handleLogin = async () => {
+        try {
+            const response = await axios.post("http://10.15.15.194:4002/login", { username, password });
+            setMessage("Login successful");
+            console.log("Logged in user:", response.data.user.fullname);
+            const user = response.data.user;
+            if (response.data.user.isAdmin) {
+                navigate("/admin", { state: { user } });
+            } else {
+                navigate("/requestor", { state: { user } });
+            }
+        } catch (error) {
+            setMessage("Invalid username or password");
+            console.error("There was an error logging in!", error);
+        }
+    };
+
     return (
         <Body>
             <Wrapper>
@@ -148,26 +197,35 @@ const LoginPage = () => {
                                 style={{ width: "65%", height: "auto" }}
                             />
                         </SidebarImgWrapper>
-                        {/* <LoginHeader>Login</LoginHeader> */}
 
                         <InputContainer>
                             <InputWrapper>
                                 <Label>Username</Label>
-                                <Input />
+                                <Icon icon={faUser} />
+                                <Input
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    placeholder="Type your username"
+                                />
                             </InputWrapper>
 
                             <InputWrapper>
                                 <Label>Password</Label>
-                                <Input type="password" />
+                                <Icon icon={faLock} />
+                                <Input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="Type your password"
+                                />
                             </InputWrapper>
                         </InputContainer>
 
+                        {message && <Message>{message}</Message>}
+
                         <ButtonContainer>
                             <ButtonWrapper>
-                                <Button>Sign in</Button>
-                            </ButtonWrapper>
-                            <ButtonWrapper style={{ alignItems: "end" }}>
-                                {/* <TicketButton>Get a request ticket</TicketButton> */}
+                                <Button onClick={handleLogin}>Sign in</Button>
                             </ButtonWrapper>
                         </ButtonContainer>
                     </SidebarWrapper>

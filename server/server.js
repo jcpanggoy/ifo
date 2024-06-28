@@ -23,7 +23,33 @@ db.connect((err) => {
     console.log("Connected to database.");
 });
 
-app.post("/saveRequest", (req, res) => {
+app.post("/login", (req, res) => {
+    const { username, password } = req.body;
+    const sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+
+    db.query(sql, [username, password], (err, results) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        if (results.length > 0) {
+            const user = results[0];
+            const isAdmin = user.admin === 1;
+            res.status(200).json({
+                message: "Login successful",
+                user: {
+                    username: user.username,
+                    fullname: user.fullname,
+                    isAdmin,
+                },
+            });
+        } else {
+            res.status(401).json({ message: "Invalid username or password" });
+        }
+    });
+});
+
+// to be edited after cars form
+app.post("/saveCRequest", (req, res) => {
     const {
         requestorName,
         dept,
@@ -47,13 +73,24 @@ app.post("/saveRequest", (req, res) => {
         otherEquipment,
         status = "Pending", // Default status to "Pending" if not provided
         remarks = "None", // Default remarks to "None" if not provided
+        user,
+        ticket,
+        carsQty,
     } = req.body;
+
+    // Filter out any unnecessary fields from cars and carsQuantities
+    const filterCarsQty = (obj) => {
+        return Object.fromEntries(
+            Object.entries(obj).filter(([key, value]) => value.checked || value.qty > 0)
+        );
+    };
 
     const filterObject = (obj) => {
         return Object.fromEntries(
             Object.entries(obj).filter(([key, value]) => value)
         );
     };
+
 
     const filteredSchoolBuilding = filterObject(schoolBuilding);
     const filteredOthers = filterObject(others);
@@ -69,32 +106,36 @@ app.post("/saveRequest", (req, res) => {
     const filteredAccessoriesQty = filterObject(accessoriesQty);
     const filteredSportsEquipment = filterObject(sportsEquipment);
     const filteredOtherEquipment = filterObject(otherEquipment);
+    const filteredCarsQty = filterCarsQty(carsQty);
 
     const sql = `
-        INSERT INTO request (
-            requestorName,
-            dept,
-            purpose,
-            dateOfFiling,
-            dateOfUse,
-            timeOfUse,
-            schoolBuilding,
-            others,
-            adminBuilding,
-            furnitures,
-            quantities,
-            device,
-            cquantities,
-            telev,
-            tquantities,
-            micQty,
-            speakerQty,
-            accessoriesQty,
-            sportsEquipment,
-            otherEquipment,
-            status,
-            remarks
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO request (
+        requestorName,
+        dept,
+        purpose,
+        dateOfFiling,
+        dateOfUse,
+        timeOfUse,
+        schoolBuilding,
+        others,
+        adminBuilding,
+        furnitures,
+        quantities,
+        device,
+        cquantities,
+        telev,
+        tquantities,
+        micQty,
+        speakerQty,
+        accessoriesQty,
+        sportsEquipment,
+        otherEquipment,
+        status,
+        remarks,
+        DeptHead,
+        ticket,
+        carsQty
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     const values = [
@@ -120,6 +161,132 @@ app.post("/saveRequest", (req, res) => {
         JSON.stringify(filteredOtherEquipment),
         status,
         remarks,
+        user,
+        ticket,
+        JSON.stringify(filteredCarsQty),
+    ];
+
+    db.query(sql, values, (err, results) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        res.status(201).json({ id: results.insertId, ...req.body });
+    });
+});
+
+
+app.post("/saveRequest", (req, res) => {
+    const {
+        requestorName,
+        dept,
+        purpose,
+        dateOfFiling,
+        dateOfUse,
+        timeOfUse,
+        schoolBuilding,
+        others,
+        adminBuilding,
+        furnitures,
+        quantities,
+        device,
+        cquantities,
+        telev,
+        tquantities,
+        micQty,
+        speakerQty,
+        accessoriesQty,
+        sportsEquipment,
+        otherEquipment,
+        status = "Pending", // Default status to "Pending" if not provided
+        remarks = "None", // Default remarks to "None" if not provided
+        user,
+        ticket,
+        carsQty,
+    } = req.body;
+
+    const filterObject = (obj) => {
+        return Object.fromEntries(
+            Object.entries(obj).filter(([key, value]) => value)
+        );
+    };
+    const filterCarsQty = (obj) => {
+        return Object.fromEntries(
+            Object.entries(obj).filter(([key, value]) => value.checked || value.qty > 0)
+        );
+    };
+
+    const filteredSchoolBuilding = filterObject(schoolBuilding);
+    const filteredOthers = filterObject(others);
+    const filteredAdminBuilding = filterObject(adminBuilding);
+    const filteredFurnitures = filterObject(furnitures);
+    const filteredQuantities = filterObject(quantities);
+    const filteredDevice = filterObject(device);
+    const filteredCQuantities = filterObject(cquantities);
+    const filteredTelev = filterObject(telev);
+    const filteredTQuantities = filterObject(tquantities);
+    const filteredMicQty = filterObject(micQty);
+    const filteredSpeakerQty = filterObject(speakerQty);
+    const filteredAccessoriesQty = filterObject(accessoriesQty);
+    const filteredSportsEquipment = filterObject(sportsEquipment);
+    const filteredOtherEquipment = filterObject(otherEquipment);
+    const filteredCarsQty = filterCarsQty(carsQty);
+
+    const sql = `
+        INSERT INTO request (
+            requestorName,
+            dept,
+            purpose,
+            dateOfFiling,
+            dateOfUse,
+            timeOfUse,
+            schoolBuilding,
+            others,
+            adminBuilding,
+            furnitures,
+            quantities,
+            device,
+            cquantities,
+            telev,
+            tquantities,
+            micQty,
+            speakerQty,
+            accessoriesQty,
+            sportsEquipment,
+            otherEquipment,
+            status,
+            remarks,
+            DeptHead,
+            ticket,
+            carsQty
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    const values = [
+        requestorName,
+        dept,
+        purpose,
+        dateOfFiling,
+        dateOfUse,
+        timeOfUse,
+        JSON.stringify(filteredSchoolBuilding),
+        JSON.stringify(filteredOthers),
+        JSON.stringify(filteredAdminBuilding),
+        JSON.stringify(filteredFurnitures),
+        JSON.stringify(filteredQuantities),
+        JSON.stringify(filteredDevice),
+        JSON.stringify(filteredCQuantities),
+        JSON.stringify(filteredTelev),
+        JSON.stringify(filteredTQuantities),
+        JSON.stringify(filteredMicQty),
+        JSON.stringify(filteredSpeakerQty),
+        JSON.stringify(filteredAccessoriesQty),
+        JSON.stringify(filteredSportsEquipment),
+        JSON.stringify(filteredOtherEquipment),
+        status,
+        remarks,
+        user,
+        ticket,
+        JSON.stringify(filteredCarsQty),
     ];
 
     db.query(sql, values, (err, results) => {

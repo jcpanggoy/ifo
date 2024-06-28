@@ -3,7 +3,7 @@ import styled from "styled-components";
 import axios from "axios";
 import FilterCase from "./FilterCase";
 import "./requestsStyle.css";
-
+import { MDBBadge, MDBBtn, MDBTable, MDBTableHead, MDBTableBody } from "mdb-react-ui-kit";
 const TableHeader = styled.th`
     border: 1px solid;
     font-size: 24px;
@@ -17,8 +17,7 @@ const TableCell = styled.td`
     border: 1px solid;
     padding: 4px;
     text-align: center;
-    font-size: ${(props) =>
-        props.fontSize || "14px"}; /* Default font size is 16px */
+    font-size: ${(props) => props.fontSize || "14px"}; /* Default font size is 16px */
 `;
 
 const LogsComponent = () => {
@@ -38,7 +37,7 @@ const LogsComponent = () => {
             query.append("statuses", filter.statuses.join(","));
         }
         axios
-            .get(`http://192.168.254.113:4002/api/logs?${query.toString()}`)
+            .get(`http://10.15.15.194:4002/api/logs?${query.toString()}`)
             .then((response) => {
                 setLogs(response.data);
             })
@@ -87,10 +86,7 @@ const LogsComponent = () => {
     };
 
     const renderValue = (value) => {
-        if (
-            !value ||
-            (typeof value === "object" && Object.keys(value).length === 0)
-        ) {
+        if (!value || (typeof value === "object" && Object.keys(value).length === 0)) {
             return "N/A";
         }
         if (typeof value === "string") {
@@ -102,6 +98,23 @@ const LogsComponent = () => {
             }
         }
         return value;
+    };
+
+    const renderStatusBadge = (status) => {
+        const statusColor = {
+            Pending: "warning",
+            Approved: "success",
+            Disapproved: "danger",
+        };
+
+        return (
+            <MDBBadge
+                color={statusColor[status]}
+                pill
+            >
+                {status}
+            </MDBBadge>
+        );
     };
 
     const renderRequestDetails = (log) => {
@@ -182,9 +195,7 @@ const LogsComponent = () => {
                     }}
                 >
                     <div>
-                        <h2 style={{ textAlign: "center" }}>
-                            Facility Usage Logs
-                        </h2>
+                        <h2 style={{ textAlign: "center" }}>Facility Usage Logs</h2>
                         <div
                             style={{
                                 borderBottom: "1px solid lightgray",
@@ -220,39 +231,21 @@ const LogsComponent = () => {
                             <tbody className="tableContent">
                                 {logs.map((log) => (
                                     <tr key={log.id}>
-                                        <TableCell style={{ fontSize: "18px" }}>
-                                            {log.id}
-                                        </TableCell>
+                                        <TableCell style={{ fontSize: "18px" }}>{log.id}</TableCell>
                                         <TableCell style={{ fontSize: "18px" }}>
                                             {renderValue(log.requestorName)}
                                         </TableCell>
-                                        <TableCell style={{ fontSize: "18px" }}>
-                                            {renderValue(log.dept)}
-                                        </TableCell>
-                                        <TableCell style={{ fontSize: "18px" }}>
-                                            {renderValue(log.purpose)}
-                                        </TableCell>
+                                        <TableCell style={{ fontSize: "18px" }}>{renderValue(log.dept)}</TableCell>
+                                        <TableCell style={{ fontSize: "18px" }}>{renderValue(log.purpose)}</TableCell>
                                         <TableCell style={{ fontSize: "18px" }}>
                                             {formatDate(log.dateOfFiling)}
                                         </TableCell>
-                                        <TableCell style={{ fontSize: "18px" }}>
-                                            {formatDate(log.dateOfUse)}
-                                        </TableCell>
-                                        <TableCell style={{ fontSize: "18px" }}>
-                                            {renderValue(log.timeOfUse)}
-                                        </TableCell>
-                                        <TableCell style={{ fontSize: "18px" }}>
-                                            {renderValue(log.status)}
-                                        </TableCell>
-                                        <TableCell style={{ fontSize: "18px" }}>
-                                            {renderRequestDetails(log)}
-                                        </TableCell>
-                                        <TableCell style={{ fontSize: "18px" }}>
-                                            {formatDate(log.created_at)}
-                                        </TableCell>
-                                        <TableCell style={{ fontSize: "18px" }}>
-                                            {/* Actions column empty */}
-                                        </TableCell>
+                                        <TableCell style={{ fontSize: "18px" }}>{formatDate(log.dateOfUse)}</TableCell>
+                                        <TableCell style={{ fontSize: "18px" }}>{renderValue(log.timeOfUse)}</TableCell>
+                                        <TableCell style={{ fontSize: "18px" }}>{renderValue(log.status)}</TableCell>
+                                        <TableCell style={{ fontSize: "18px" }}>{renderRequestDetails(log)}</TableCell>
+                                        <TableCell style={{ fontSize: "18px" }}>{formatDate(log.created_at)}</TableCell>
+                                        <TableCell style={{ fontSize: "18px" }}>{/* Actions column empty */}</TableCell>
                                     </tr>
                                 ))}
                             </tbody>

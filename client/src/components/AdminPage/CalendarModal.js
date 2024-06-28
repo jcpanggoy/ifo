@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Overlay = styled.section`
     position: absolute;
+    z-index: 999;
     width: 100%;
     height: 100%;
     background-color: rgba(128, 128, 128, 0.4);
@@ -14,17 +15,14 @@ const Overlay = styled.section`
 `;
 
 const Modal = styled.div`
-    width: 80vw;
-    height: 80vh;
+    width: 70vw;
+    height: 70vh;
     background-color: white;
     display: flex;
     flex-direction: column;
     opacity: 1;
     position: relative;
     border-radius: 4px;
-    padding: 20px;
-    overflow-y: auto;
-    z-index: 99999;
 `;
 
 const CloseIcon = styled(FontAwesomeIcon)`
@@ -32,64 +30,39 @@ const CloseIcon = styled(FontAwesomeIcon)`
     cursor: pointer;
 `;
 
-const Header = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-`;
-
-const DateInfo = styled.div`
-    font-size: 1.5em;
-    font-weight: bold;
-`;
-
-const RequestContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 10px;
-`;
-
-const RequestItem = styled.div`
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    margin-bottom: 10px;
-`;
-
 const CalendarModal = ({ handleCalendarModal, requests, selectedDate }) => {
-    const dayOfWeek = selectedDate.toLocaleDateString("en-US", {
-        weekday: "long",
-    });
-    const formattedDate = selectedDate.toLocaleDateString();
-
     return (
         <Overlay>
             <Modal>
-                <Header>
-                    <DateInfo>
-                        {dayOfWeek}, {formattedDate}
-                    </DateInfo>
-                    <CloseIcon
-                        icon={faXmark}
-                        size="xl"
-                        onClick={handleCalendarModal}
-                        style={{ padding: "12px" }}
-                    />
-                </Header>
-                {requests && requests.map((request, index) => (
-                    <RequestContainer key={index}>
-                        <RequestItem>
-                            <span>{request.timeOfUse}</span>
-                            <span>{request.requestorName}</span>
-                            <span>{request.dept}</span>
-                            <span>{request.request}</span>
-                            <span>{request.purpose}</span>
-                        </RequestItem>
-                    </RequestContainer>
-                ))}
+                <CloseIcon
+                    icon={faXmark}
+                    size="xl"
+                    onClick={handleCalendarModal}
+                    style={{ padding: "12px" }}
+                />
+                <div style={{}}>
+                    <h3>{selectedDate.toDateString()}</h3>
+                    {requests.map((request, index) => (
+                        <div
+                            key={index}
+                            style={{
+                                display: "grid",
+                                gridTemplateColumns: ".5fr .5fr .5fr .5fr .5fr",
+                                // gridTemplateRows: ".4fr",
+                                textAlign: "center",
+                                fontSize: "18px",
+                                // alignContent: "center",
+                                // justifyContent: "center",
+                            }}
+                        >
+                            <p>{request.timeOfUse}</p>
+                            <p>{request.requestorName}</p>
+                            <p>{request.dept}</p>
+                            <p>{request.request}</p>
+                            <p>{request.purpose}</p>
+                        </div>
+                    ))}
+                </div>
             </Modal>
         </Overlay>
     );

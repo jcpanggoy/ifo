@@ -13,18 +13,23 @@ const RequestModal = ({ handleCar, handleEquipment }) => {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    backgroundColor: "gray",
+                    // backgroundColor: "gray",
+                    background:
+                        "linear-gradient(45deg, #0B0E4E, #0A3C8C, #FFFFFF, #D99C9A, #B51E1E, #8D1D1D)",
+                    backgroundSize: "600% 600%",
+                    animation: "gradientAnimation 15s ease infinite",
                 }}
             >
                 <div
                     style={{
                         width: "60%",
                         height: "60%",
-                        backgroundColor: "white",
+                        backgroundColor: "#fafafa",
                         borderRadius: "12px",
                         display: "flex",
                         justifyContent: "center",
                         alignItems: "center",
+                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.5)",
                     }}
                 >
                     <div
@@ -34,9 +39,28 @@ const RequestModal = ({ handleCar, handleEquipment }) => {
                             alignItems: "center",
                         }}
                     >
-                        <h2 style={{ textAlign: "center", padding: "20px" }}>
+                        <h2
+                            style={{
+                                fontStyle: "italic",
+                                textAlign: "center",
+                                padding: "20px",
+                                textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
+                            }}
+                        >
                             Hello, Mapúa Malayan!
                         </h2>
+
+                        <div style={{ textAlign: "center" }}>
+                            <p>
+                                Through this system, you can easily book
+                                facilities, equipments, or vehicles from the
+                                school.
+                                <br />
+                                Simply select the type of resource you need and
+                                complete the form.
+                            </p>
+                        </div>
+
                         <div
                             style={{
                                 borderBottom: "1px solid lightgray",

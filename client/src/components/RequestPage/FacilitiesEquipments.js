@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Requestpage.css";
 import logo from "../../img/MMCM_Logo.svg";
 
-const FacilitiesEquipments = () => {
+const FacilitiesEquipments = ({ user }) => {
+    console.log("username:" + user.username);
     const [requestorName, setRequestorName] = useState("");
     const [dept, setDept] = useState("");
     const [purpose, setPurpose] = useState("");
@@ -217,6 +218,10 @@ const FacilitiesEquipments = () => {
         SetAccessoriesQty((prev) => ({ ...prev, [name]: Number(value) }));
     };
 
+    useEffect(() => {
+        setDept(user.username);
+    }, [user.username]);
+
     const handleSubmit = async () => {
         const formData = {
             requestorName,
@@ -319,19 +324,20 @@ const FacilitiesEquipments = () => {
                 other2: otherEquipment.other2,
                 other3: otherEquipment.other3,
             },
+            user: user.fullname,
+            ticket: 0,
+            cars: "",
+            carsQuantities: "",
         };
 
         try {
-            const response = await fetch(
-                "http://192.168.254.113:4002/saveRequest",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(formData),
-                }
-            );
+            const response = await fetch("http://10.15.15.194:4002/saveRequest", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+            });
 
             if (response.ok) {
                 alert("Request saved successfully!");
@@ -373,6 +379,7 @@ const FacilitiesEquipments = () => {
                             style={{
                                 gridColumn: "1 /span 2",
                                 textAlign: "center",
+                                textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
                             }}
                         >
                             PERMIT TO USE FACILITIES AND EQUIPMENT
@@ -381,18 +388,17 @@ const FacilitiesEquipments = () => {
                         {/* Instructions */}
                         <div>
                             <p className="instructions">
-                                1. This form must be accomplished in 3 copies
-                                prior to the use of any MMCM facilities. <br />
-                                2. The use of such equipment/facilities is
-                                subject to the discretion of MMCM. <br />
-                                3. The requester shall be held accountable in
-                                case of breakage and/or loss of items during the
-                                time of use. <br />
-                                The requester agrees to replace the item(s) with
-                                the same brand or its equivalent. <br />
-                                4. The requester must return the borrowed
-                                item(s) at the end of the requested time of use.
+                                1. This form must be accomplished in 3 copies prior to the use of any MMCM facilities.{" "}
+                                <br />
+                                2. The use of such equipment/facilities is subject to the discretion of MMCM. <br />
+                                3. The requester shall be held accountable in case of breakage and/or loss of items
+                                during the time of use. <br />
+                                The requester agrees to replace the item(s) with the same brand or its equivalent.{" "}
+                                <br />
+                                4. The requester must return the borrowed item(s) at the end of the requested time of
+                                use.
                             </p>
+                            <div className="divider"></div>
                         </div>
                     </div>
 
@@ -402,9 +408,7 @@ const FacilitiesEquipments = () => {
                             <input
                                 className="Input"
                                 value={requestorName}
-                                onChange={(e) =>
-                                    setRequestorName(e.target.value)
-                                }
+                                onChange={(e) => setRequestorName(e.target.value)}
                                 placeholder="Lastname, Firstname, Middle Initial"
                             />
                         </div>
@@ -414,9 +418,10 @@ const FacilitiesEquipments = () => {
                                 className="Input"
                                 value={dept}
                                 onChange={(e) => setDept(e.target.value)}
-                                placeholder="e.g. CCIS"
+                                disabled
                             />
                         </div>
+
                         <div className="FormGroup">
                             <label className="Label">Purpose</label>
                             <input
@@ -435,9 +440,7 @@ const FacilitiesEquipments = () => {
                                 type="date"
                                 className="Input"
                                 value={dateOfFiling}
-                                onChange={(e) =>
-                                    setDateOfFiling(e.target.value)
-                                }
+                                onChange={(e) => setDateOfFiling(e.target.value)}
                             />
                         </div>
                         <div className="FormGroup">
@@ -461,9 +464,7 @@ const FacilitiesEquipments = () => {
                     </div>
 
                     {/******************* Facilities Checklist *******************/}
-                    <h2 className="facilities-checklist-header">
-                        Facilities Checklist
-                    </h2>
+                    <h2 className="facilities-checklist-header">Facilities Checklist</h2>
 
                     {/* School Building Contents */}
                     <div className="school-building">
@@ -796,9 +797,7 @@ const FacilitiesEquipments = () => {
                     </div>
 
                     {/******************* Equipment Checklist *******************/}
-                    <h2 className="equipment-checklist-header">
-                        Equipment Checklist
-                    </h2>
+                    <h2 className="equipment-checklist-header">Equipment Checklist</h2>
 
                     {/* Equipment Checklists DIV */}
                     <div className="equipment-checklists">
@@ -1104,8 +1103,7 @@ const FacilitiesEquipments = () => {
                                             onChange={(e) =>
                                                 setMicQty((prev) => ({
                                                     ...prev,
-                                                    [e.target.name]:
-                                                        e.target.checked,
+                                                    [e.target.name]: e.target.checked,
                                                 }))
                                             }
                                             disabled={!device.projector}
@@ -1131,8 +1129,7 @@ const FacilitiesEquipments = () => {
                                             onChange={(e) =>
                                                 setMicQty((prev) => ({
                                                     ...prev,
-                                                    [e.target.name]:
-                                                        e.target.checked,
+                                                    [e.target.name]: e.target.checked,
                                                 }))
                                             }
                                             disabled={!device.projector}
@@ -1170,8 +1167,7 @@ const FacilitiesEquipments = () => {
                                             onChange={(e) =>
                                                 setSpeakerQty((prev) => ({
                                                     ...prev,
-                                                    [e.target.name]:
-                                                        e.target.checked,
+                                                    [e.target.name]: e.target.checked,
                                                 }))
                                             }
                                             disabled={!device.speaker}
@@ -1197,8 +1193,7 @@ const FacilitiesEquipments = () => {
                                             onChange={(e) =>
                                                 setSpeakerQty((prev) => ({
                                                     ...prev,
-                                                    [e.target.name]:
-                                                        e.target.checked,
+                                                    [e.target.name]: e.target.checked,
                                                 }))
                                             }
                                             disabled={!device.speaker}
@@ -1503,9 +1498,7 @@ const FacilitiesEquipments = () => {
                     </div>
 
                     {/******************* Remarks/Special Instructions *******************/}
-                    <h2 className="remarks-header">
-                        Remarks/Special Instructions
-                    </h2>
+                    <h2 className="remarks-header">Remarks/Special Instructions</h2>
                     <div className="remarks">
                         <textarea
                             style={{
@@ -1521,22 +1514,21 @@ const FacilitiesEquipments = () => {
                     <div className="approval-section">
                         <div>
                             <label>Prepared by:</label>
-                            <div></div>
                             <p>Requester</p>
                         </div>
                         <div>
-                            <label>Recommended by:</label>
-                            <div></div>
+                            <label style={{ display: "flex" }}>
+                                Recommended by: <b>{user.fullname}</b>
+                            </label>
+
                             <p>Adviser/Principal/Pgm Chair/Dean/Dept. Head</p>
                         </div>
                         <div>
                             <label>Verified by:</label>
-                            <div></div>
                             <p>Laboratory Assistant</p>
                         </div>
                         <div>
                             <label>Approved by:</label>
-                            <div></div>
                             <p>IFO-TLF Officer</p>
                         </div>
                     </div>

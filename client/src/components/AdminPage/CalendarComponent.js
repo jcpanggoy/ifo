@@ -102,61 +102,38 @@ const StyledCalendar = styled(Calendar)`
     }
 `;
 
-const CalendarComponent = ({ handleCalendarModal, sendDataToParent }) => {
+const CalendarComponent = ({ sendDataToParent }) => {
     const [value, onChange] = useState(new Date());
     const [acceptedRequests, setAcceptedRequests] = useState([]);
     const [selectedDateRequests, setSelectedDateRequests] = useState([]);
     const [selectedDate, setSelectedDate] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // Modal Test State
-
     useEffect(() => {
         axios
-            .get("http://192.168.254.113:4002/api/requests?status=Approved")
+            .get("http://10.15.15.194:4002/api/requests?status=Approved")
             .then((response) => {
                 setAcceptedRequests(response.data);
             })
             .catch((error) => {
-                console.error(
-                    "There was an error fetching the accepted requests!",
-                    error
-                );
+                console.error("There was an error fetching the accepted requests!", error);
             });
     }, []);
 
     const getRequestsForDate = (date) => {
-        return acceptedRequests.filter(
-            (request) =>
-                new Date(request.dateOfUse).toDateString() ===
-                date.toDateString()
-        );
+        return acceptedRequests.filter((request) => new Date(request.dateOfUse).toDateString() === date.toDateString());
     };
-
-    // const handleTileClick = (date) => {
-    //     const requestsForDate = getRequestsForDate(date);
-    //     setSelectedDateRequests(requestsForDate);
-    //     setSelectedDate(date);
-    //     setIsModalOpen(true);
-    // };
 
     const handleTileClick = (date) => {
         const requestsForDate = getRequestsForDate(date);
         setSelectedDateRequests(requestsForDate);
         setSelectedDate(date);
         setIsModalOpen(true);
-        sendDataToParent(date); // Pass the selected date to the parent
+        sendDataToParent(date, requestsForDate); // Pass the selected date and requests to the parent
     };
 
     const closeCalendarModal = () => {
         setIsModalOpen(false);
-    };
-
-    const passToParent = (date) => {
-        // Pass to parent
-        setIsModalOpen(true);
-        sendDataToParent(date, isModalOpen);
-        // console.log(date);
     };
 
     return (
@@ -168,14 +145,8 @@ const CalendarComponent = ({ handleCalendarModal, sendDataToParent }) => {
                 tileContent={({ date, view }) =>
                     view === "month" && (
                         <div
-                            className={`content ${
-                                getRequestsForDate(date).length > 0
-                                    ? "highlighted-tile"
-                                    : ""
-                            }`}
-                            // onClick={() => handleTileClick(date)}
-                            onClick={passToParent(date)}
-                            // key={date.length}
+                            className={`content ${getRequestsForDate(date).length > 0 ? "highlighted-tile" : ""}`}
+                            onClick={() => handleTileClick(date)}
                         >
                             {getRequestsForDate(date).map((request, index) => (
                                 <div
@@ -195,17 +166,15 @@ const CalendarComponent = ({ handleCalendarModal, sendDataToParent }) => {
                         </div>
                     )
                 }
-                formatDay={(locale, date) => (
-                    <div className="date">{date.getDate()} </div>
-                )}
+                formatDay={(locale, date) => <div className="date">{date.getDate()} </div>}
             />
-            {isModalOpen && (
+            {/* {isModalOpen && (
                 <CalendarModal
                     handleCalendarModal={closeCalendarModal}
                     requests={selectedDateRequests}
                     selectedDate={selectedDate}
                 />
-            )}
+            )} */}
         </FullScreenContainer>
     );
 };

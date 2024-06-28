@@ -45,17 +45,14 @@ const FilterCase = ({ onFilterChange }) => {
 
     useEffect(() => {
         axios
-            .get("http://192.168.254.113:4002/api/category_counts")
+            .get("http://10.15.15.194:4002/api/category_counts")
             .then((response) => {
                 console.log("Response data:", response.data);
                 setDepartments(response.data.departments);
                 setStatuses(response.data.statuses);
             })
             .catch((error) => {
-                console.error(
-                    "There was an error fetching the category counts!",
-                    error
-                );
+                console.error("There was an error fetching the category counts!", error);
             });
     }, []);
 
@@ -63,18 +60,13 @@ const FilterCase = ({ onFilterChange }) => {
         setSelectedDepartment(department);
         setSelectedStatuses([]); // Clear selected statuses when department changes
         axios
-            .get(
-                `http://192.168.254.113:4002/api/category_counts?department=${department}`
-            )
+            .get(`http://10.15.15.194:4002/api/category_counts?department=${department}`)
             .then((response) => {
                 setStatuses(response.data.statuses);
                 onFilterChange({ department, statuses: [] });
             })
             .catch((error) => {
-                console.error(
-                    "There was an error fetching the status counts!",
-                    error
-                );
+                console.error("There was an error fetching the status counts!", error);
             });
     };
 
@@ -92,9 +84,7 @@ const FilterCase = ({ onFilterChange }) => {
     return (
         <Sidebar>
             <FilterContainer>
-                <h4 style={{ fontSize: "20px", textAlign: "center" }}>
-                    Search Filter
-                </h4>
+                <h4 style={{ fontSize: "20px", textAlign: "center" }}>Search Filter</h4>
                 <Dropdown>
                     <Dropdown.Toggle
                         variant="secondary"
@@ -107,11 +97,7 @@ const FilterCase = ({ onFilterChange }) => {
                         {departments.map((department, index) => (
                             <Dropdown.Item
                                 key={index}
-                                onClick={() =>
-                                    handleDepartmentChange(
-                                        department.department
-                                    )
-                                }
+                                onClick={() => handleDepartmentChange(department.department)}
                             >
                                 {department.department} ({department.count})
                             </Dropdown.Item>
@@ -124,12 +110,8 @@ const FilterCase = ({ onFilterChange }) => {
                         <CategoryItem key={index}>
                             <Checkbox
                                 type="checkbox"
-                                checked={selectedStatuses.includes(
-                                    status.status
-                                )}
-                                onChange={() =>
-                                    handleStatusChange(status.status)
-                                }
+                                checked={selectedStatuses.includes(status.status)}
+                                onChange={() => handleStatusChange(status.status)}
                             />
                             <label>
                                 {status.status} ({status.count})
