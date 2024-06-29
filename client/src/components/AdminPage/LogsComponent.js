@@ -37,7 +37,7 @@ const LogsComponent = () => {
             query.append("statuses", filter.statuses.join(","));
         }
         axios
-            .get(`http://10.15.15.194:4002/api/logs?${query.toString()}`)
+            .get(`http://192.168.254.113:4002/api/logs?${query.toString()}`)
             .then((response) => {
                 setLogs(response.data);
             })

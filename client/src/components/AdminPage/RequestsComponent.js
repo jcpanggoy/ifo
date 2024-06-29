@@ -21,7 +21,7 @@ const RequestsComponent = () => {
 
     useEffect(() => {
         axios
-            .get("http://10.15.15.194:4002/api/requests")
+            .get("http://192.168.254.113:4002/api/requests")
             .then((response) => {
                 console.log(response.data);
                 setRequests(response.data);
@@ -33,7 +33,7 @@ const RequestsComponent = () => {
 
     const handleApprove = (id) => {
         axios
-            .post(`http://10.15.15.194:4002/api/requests/${id}/approve`)
+            .post(`http://192.168.254.113:4002/api/requests/${id}/approve`)
             .then((response) => {
                 const updatedRequests = requests.map((req) =>
                     req.id === id ? { ...req, status: "Approved", remarks: "" } : req
@@ -53,7 +53,7 @@ const RequestsComponent = () => {
         const request = requests.find((req) => req.id === id);
         const remarks = request.remarks;
         axios
-            .post(`http://10.15.15.194:4002/api/requests/${id}/disapprove`, {
+            .post(`http://192.168.254.113:4002/api/requests/${id}/disapprove`, {
                 remarks,
             })
             .then((response) => {

@@ -23,6 +23,7 @@ db.connect((err) => {
     console.log("Connected to database.");
 });
 
+
 app.post("/login", (req, res) => {
     const { username, password } = req.body;
     const sql = "SELECT * FROM users WHERE username = ? AND password = ?";
@@ -374,5 +375,5 @@ app.get("/api/category_counts", (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
+    console.log(`Server running on http://192.168.254.113:${port}`);
 });

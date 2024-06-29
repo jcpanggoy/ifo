@@ -331,7 +331,7 @@ const FacilitiesEquipments = ({ user }) => {
         };
 
         try {
-            const response = await fetch("http://10.15.15.194:4002/saveRequest", {
+            const response = await fetch("http://192.168.254.113:4002/saveRequest", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

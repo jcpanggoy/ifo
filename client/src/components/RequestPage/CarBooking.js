@@ -10,6 +10,9 @@ const CarBooking = ({ user }) => {
     const [dateOfUse, setDateOfUse] = useState("");
     const [timeOfUse, setTimeOfUse] = useState("");
     const [carsQty, setCarsQty] = useState({
+        //Sedan: Civic, Corolla, BMW
+        //Van: Sienna, Odyssey, Transit
+        //Bus: Transit Bus, Express, T-Liner
         sedan: {
             checked: false,
             qty: 0,
@@ -97,7 +100,7 @@ const CarBooking = ({ user }) => {
         };
 
         try {
-            const response = await fetch("http://10.15.15.194:4002/saveCRequest", {
+            const response = await fetch("http://192.168.254.113:4002/saveCRequest", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

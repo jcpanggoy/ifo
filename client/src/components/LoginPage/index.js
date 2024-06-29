@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+// src/components/LoginPage.js
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
-import RequestModal from "../RequestPage/RequestModal";
-import MCMLogo from "../../img/MMCM_Logo.svg";
-import MCMBg from "../../img/MMCM_Bg.jpg";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
+import { useAuth } from "../../AuthContext";
+import MCMLogo from "../../img/MMCM_Logo.svg";
+import MCMBg from "../../img/MMCM_Bg.jpg";
 
 const Body = styled.div`
     width: 100%;
@@ -162,16 +163,19 @@ const LoginPage = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleLogin = async () => {
         try {
-            const response = await axios.post("http://10.15.15.194:4002/login", { username, password });
+            const response = await axios.post("http://192.168.254.113:4002/login", { username, password });
             setMessage("Login successful");
-            console.log("Logged in user:", response.data.user.fullname);
             const user = response.data.user;
-            if (response.data.user.isAdmin) {
+
+            localStorage.setItem("user", JSON.stringify(user));
+            login(user, 3600);
+
+            if (user.isAdmin) {
                 navigate("/admin", { state: { user } });
             } else {
                 navigate("/requestor", { state: { user } });
@@ -181,6 +185,17 @@ const LoginPage = () => {
             console.error("There was an error logging in!", error);
         }
     };
+
+    useEffect(() => {
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (user) {
+            if (user.isAdmin) {
+                navigate("/admin", { state: { user } });
+            } else {
+                navigate("/requestor", { state: { user } });
+            }
+        }
+    }, []);
 
     return (
         <Body>
