@@ -8,6 +8,7 @@ import {
     faArrowRightFromBracket,
 } from "@fortawesome/free-solid-svg-icons";
 import MCMLogo from "../../img/MMCM_Logo.svg";
+import { useNavigate } from "react-router-dom";
 
 const Sidebar = styled.section`
     width: 10vw;
@@ -111,12 +112,16 @@ const LogoutButton = styled.button`
     }
 `;
 
-const SidebarComponent = ({
-    openLogs,
-    openCalendar,
-    openRequests,
-    activeItem,
-}) => {
+const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("loggedIn");
+    localStorage.removeItem("timeLeft");
+
+    window.location.reload();
+};
+
+
+const SidebarComponent = ({ openLogs, openCalendar, openRequests, activeItem }) => {
     return (
         <Sidebar>
             <SidebarContainer>
@@ -154,9 +159,8 @@ const SidebarComponent = ({
                 </SidebarMainContent>
             </SidebarContainer>
             <LogoutButtonContainer>
-                <LogoutButton>
-                    <FontAwesomeIcon icon={faArrowRightFromBracket} />{" "}
-                    <IconLabel>Logout</IconLabel>
+                <LogoutButton onClick={handleLogout}>
+                    <FontAwesomeIcon icon={faArrowRightFromBracket} /> <IconLabel>Logout</IconLabel>
                 </LogoutButton>
             </LogoutButtonContainer>
         </Sidebar>

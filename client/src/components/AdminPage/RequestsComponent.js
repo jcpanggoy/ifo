@@ -76,76 +76,92 @@ const RequestsComponent = () => {
     const pendingRequests = requests.filter((req) => req.status === "Pending");
 
     const RenderCarsQty = ({ carsQty }) => {
-        const parsedCarsQty = JSON.parse(carsQty);
-        const filteredCars = Object.keys(parsedCarsQty)
-            .filter((key) => parsedCarsQty[key].checked)
-            .map((key) => ({
-                name: key,
-                qty: parsedCarsQty[key].qty,
-            }));
+        if (!carsQty) {
+            return null; // Return null to render nothing if carsQty is not available
+        }
+
+        let parsedCarsQty;
+        try {
+            parsedCarsQty = JSON.parse(carsQty);
+        } catch (error) {
+            console.error("Error parsing carsQty:", error);
+            return <p>Invalid data format</p>; // Handle JSON parse errors gracefully
+        }
+
+        const carEntries = Object.entries(parsedCarsQty).filter(([type, models]) => models);
+
+        if (carEntries.length === 0) {
+            return null; // Return null to render nothing if no valid car entries are found
+        }
 
         return (
             <div>
-                {filteredCars.length > 0 ? (
-                    <ul>
-                        {filteredCars.map((car, index) => (
-                            <li key={index}>
-                                {car.name}: {car.qty}
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
-                    <p>No cars selected</p>
-                )}
+                {carEntries.map(([type, models]) => (
+                    <div key={type}>
+                        {type}:{" "}
+                        {Object.entries(models)
+                            .map(([model, details]) =>
+                                details.checked && details.qty > 0 ? `${model}: ${details.qty}` : null
+                            )
+                            .filter((item) => item)
+                            .join(", ")}
+                    </div>
+                ))}
             </div>
         );
     };
 
-    const renderRequestDetails = (log) => {
+    const renderRequestDetails = (req) => {
+        // if (req.ticketType === 0) {
+        //     // Make sure this matches how you determine if a ticket is for facilities.
+        //     return null; // Do not display any details if it's a facilities ticket.
+        // }
+
         const parseAndFilter = (json) => {
             let parsedJson;
             try {
                 parsedJson = JSON.parse(json);
             } catch (error) {
                 console.error("JSON Parse error:", error);
-                return [];
+                return []; // Return an empty array on JSON parse error
             }
             return Object.entries(parsedJson).filter(([key, value]) => value);
         };
 
         const allDetails = [
-            ...parseAndFilter(log.schoolBuilding),
-            ...parseAndFilter(log.others),
-            ...parseAndFilter(log.adminBuilding),
-            ...parseAndFilter(log.furnitures),
-            ...parseAndFilter(log.quantities),
-            ...parseAndFilter(log.device),
-            ...parseAndFilter(log.cquantities),
-            ...parseAndFilter(log.telev),
-            ...parseAndFilter(log.tquantities),
-            ...parseAndFilter(log.micQty),
-            ...parseAndFilter(log.speakerQty),
-            ...parseAndFilter(log.accessoriesQty),
-            ...parseAndFilter(log.sportsEquipment),
-            ...parseAndFilter(log.otherEquipment),
+            ...parseAndFilter(req.schoolBuilding),
+            ...parseAndFilter(req.others),
+            ...parseAndFilter(req.adminBuilding),
+            ...parseAndFilter(req.furnitures),
+            ...parseAndFilter(req.quantities),
+            ...parseAndFilter(req.device),
+            ...parseAndFilter(req.cquantities),
+            ...parseAndFilter(req.telev),
+            ...parseAndFilter(req.tquantities),
+            ...parseAndFilter(req.micQty),
+            ...parseAndFilter(req.speakerQty),
+            ...parseAndFilter(req.accessoriesQty),
+            ...parseAndFilter(req.sportsEquipment),
+            ...parseAndFilter(req.otherEquipment),
         ];
 
-        if (log.carsQty) {
-            allDetails.push(["Cars", <RenderCarsQty carsQty={log.carsQty} />]);
-        }
+        // if (req.carsQty && req.ticketType !== 0) {
+        //     // Check if carsQty exists and ticket is not for facilities
+        //     allDetails.push([<RenderCarsQty carsQty={req.carsQty} />]);
+        // }
 
         if (allDetails.length === 0) {
             return "N/A";
         }
 
         return (
-            <ul>
+            <div>
                 {allDetails.map(([key, value]) => (
-                    <li key={key}>
-                        {key}: {typeof value === "boolean" ? "Yes" : value}
-                    </li>
+                    <div key={key}>
+                        {key}: {typeof value === "boolean" ? "" : value}
+                    </div>
                 ))}
-            </ul>
+            </div>
         );
     };
 
@@ -178,13 +194,14 @@ const RequestsComponent = () => {
         <section
             style={{
                 display: "flex",
+                flexDirection: "column",
                 justifyContent: "center",
                 width: "auto",
                 fontSize: "14px",
             }}
         >
-            <div>
-                <h2 style={{ textAlign: "center", padding: "20px" }}>Requested Facilities</h2>
+            <h2 style={{ textAlign: "center", padding: "20px" }}>Requested Facilities</h2>
+            <div style={{ maxHeight: "80vh", height: "100%", overflowY: "scroll" }}>
                 <div
                     style={{
                         borderBottom: "1px solid lightgray",
@@ -198,6 +215,7 @@ const RequestsComponent = () => {
                             <th>Ticket</th>
                             <th>Date of Filing</th>
                             <th>Date of Use</th>
+                            <th>Time of Use</th>
                             <th>Request</th>
                             <th>Purpose</th>
                             <th>Status</th>
@@ -210,6 +228,7 @@ const RequestsComponent = () => {
                     <MDBTableBody>
                         {pendingRequests.map((req) => (
                             <tr key={req.id}>
+                                {console.log(req.ticket)}
                                 <td>
                                     <p className="fw-bold mb-1">{renderTicketType(req.ticket)}</p>
                                 </td>
@@ -219,7 +238,15 @@ const RequestsComponent = () => {
                                 <td>
                                     <p className="fw-bold mb-1">{formatDate(req.dateOfUse)}</p>
                                 </td>
-                                <td>{renderRequestDetails(req)}</td>
+                                <td>
+                                    <p className="fw-bold mb-1">{req.timeOfUseStart} - {req.timeOfUseEnd}</p>
+                                </td>
+                                <td>
+                                    {
+                                        req.ticket === 0 ? renderRequestDetails(req) : RenderCarsQty(req)
+                                        // renderRequestDetails(req)
+                                    }
+                                </td>
                                 <td>
                                     <p className="fw-normal mb-1">{req.purpose}</p>
                                 </td>
@@ -263,21 +290,26 @@ const RequestsComponent = () => {
                                                     padding: "10px",
                                                     borderRadius: "18px",
                                                     color: "white",
-                                                    backgroundColor: "gdarkreen",
+                                                    backgroundColor: "darkgreen",
                                                 }}
                                                 onClick={() => handleApprove(req.id)}
                                             >
                                                 Approve
                                             </button>
-                                            <MDBBtn
-                                                rippleColor="secondary"
-                                                className="me-1"
-                                                color="danger"
-                                                size="sm"
+                                            <button
+                                                style={{
+                                                    maxWidth: "130px",
+                                                    width: "200px",
+                                                    border: 0,
+                                                    padding: "10px",
+                                                    borderRadius: "18px",
+                                                    color: "white",
+                                                    backgroundColor: "darkRed",
+                                                }}
                                                 onClick={() => handleDisapprove(req.id)}
                                             >
                                                 Disapprove
-                                            </MDBBtn>
+                                            </button>
                                             {disapproveIndex === req.id && (
                                                 <MDBBtn
                                                     className="me-1"

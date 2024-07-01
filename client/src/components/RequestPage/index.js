@@ -27,6 +27,18 @@ const Requestpage = () => {
         handleModal();
     };
 
+    const disableCarWindow = () => {
+        setShowCar(false);
+        setShowEquipment(false);
+        setIsModalVisible(true);
+    };
+
+    const disableFacilitiesWindow = () => {
+        setShowCar(false);
+        setShowEquipment(false);
+        setIsModalVisible(true);
+    };
+
     return (
         <>
             {isModalVisible && (
@@ -35,8 +47,18 @@ const Requestpage = () => {
                     handleEquipment={handleEquipment}
                 />
             )}
-            {showCar && <CarBooking user={user} />}
-            {showEquipment && <FacilitiesEquipments user={user} />}
+            {showCar && (
+                <CarBooking
+                    user={user}
+                    disableCarWindow={disableCarWindow}
+                />
+            )}
+            {showEquipment && (
+                <FacilitiesEquipments
+                    user={user}
+                    disableFacilitiesWindow={disableFacilitiesWindow}
+                />
+            )}
         </>
     );
 };

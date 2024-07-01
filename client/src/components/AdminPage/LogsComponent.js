@@ -117,7 +117,11 @@ const LogsComponent = () => {
         );
     };
 
-    const renderRequestDetails = (log) => {
+    const renderTicketType = (ticket) => {
+        return ticket === 0 ? "Facilities" : "Car";
+    };
+
+    const renderRequestDetails = (req) => {
         const parseAndFilter = (json) => {
             let parsedJson;
             try {
@@ -129,36 +133,21 @@ const LogsComponent = () => {
             return Object.entries(parsedJson).filter(([key, value]) => value);
         };
 
-        const schoolBuildingDetails = parseAndFilter(log.schoolBuilding);
-        const othersDetails = parseAndFilter(log.others);
-        const adminBuildingDetails = parseAndFilter(log.adminBuilding);
-        const furnituresDetails = parseAndFilter(log.furnitures);
-        const quantitiesDetails = parseAndFilter(log.quantities);
-        const deviceDetails = parseAndFilter(log.device);
-        const cquantitiesDetails = parseAndFilter(log.cquantities);
-        const televDetails = parseAndFilter(log.telev);
-        const tquantitiesDetails = parseAndFilter(log.tquantities);
-        const micQtyDetails = parseAndFilter(log.micQty);
-        const speakerQtyDetails = parseAndFilter(log.speakerQty);
-        const accessoriesQtyDetails = parseAndFilter(log.accessoriesQty);
-        const sportsEquipmentDetails = parseAndFilter(log.sportsEquipment);
-        const otherEquipmentDetails = parseAndFilter(log.otherEquipment);
-
         const allDetails = [
-            ...schoolBuildingDetails,
-            ...othersDetails,
-            ...adminBuildingDetails,
-            ...furnituresDetails,
-            ...quantitiesDetails,
-            ...deviceDetails,
-            ...cquantitiesDetails,
-            ...televDetails,
-            ...tquantitiesDetails,
-            ...micQtyDetails,
-            ...speakerQtyDetails,
-            ...accessoriesQtyDetails,
-            ...sportsEquipmentDetails,
-            ...otherEquipmentDetails,
+            ...parseAndFilter(req.schoolBuilding),
+            ...parseAndFilter(req.others),
+            ...parseAndFilter(req.adminBuilding),
+            ...parseAndFilter(req.furnitures),
+            ...parseAndFilter(req.quantities),
+            ...parseAndFilter(req.device),
+            ...parseAndFilter(req.cquantities),
+            ...parseAndFilter(req.telev),
+            ...parseAndFilter(req.tquantities),
+            ...parseAndFilter(req.micQty),
+            ...parseAndFilter(req.speakerQty),
+            ...parseAndFilter(req.accessoriesQty),
+            ...parseAndFilter(req.sportsEquipment),
+            ...parseAndFilter(req.otherEquipment),
         ];
 
         if (allDetails.length === 0) {
@@ -166,13 +155,13 @@ const LogsComponent = () => {
         }
 
         return (
-            <ul>
+            <div>
                 {allDetails.map(([key, value]) => (
-                    <li key={key}>
-                        {key}: {typeof value === "boolean" ? "Yes" : value}
-                    </li>
+                    <div key={key}>
+                        {key}: {typeof value === "boolean" ? "" : value}
+                    </div>
                 ))}
-            </ul>
+            </div>
         );
     };
 
@@ -185,7 +174,7 @@ const LogsComponent = () => {
                     display: "flex",
                     justifyContent: "center",
                     width: "100%",
-                    overflowX: "auto",
+                    height: "100%",
                 }}
             >
                 <div
@@ -194,57 +183,47 @@ const LogsComponent = () => {
                         width: "auto",
                     }}
                 >
-                    <div>
-                        <h2 style={{ textAlign: "center" }}>Facility Usage Logs</h2>
-                        <div
-                            style={{
-                                borderBottom: "1px solid lightgray",
-                                width: "100%",
-                                marginBottom: "20px",
-                            }}
-                        ></div>
-
-                        <div
-                            style={{
-                                borderBottom: "1px solid lightgray",
-                                width: "100%",
-                                marginBottom: "20px",
-                            }}
-                        ></div>
-
+                    <h2 style={{ textAlign: "center" }}>Facility Usage Logs</h2>
+                    <div style={{ maxHeight: "80vh", height: "100%", overflowY: "scroll" }}>
                         <table className="table">
-                            <thead style={{ margin: "0", padding: "0" }}>
-                                <tr style={{ margin: "0", padding: "0" }}>
-                                    <TableHeader>ID</TableHeader>
-                                    <TableHeader>Requester Name</TableHeader>
+                            <thead>
+                                <tr>
+                                    <TableHeader>Ticket</TableHeader>
                                     <TableHeader>Department</TableHeader>
+                                    <TableHeader>Requester Name</TableHeader>
+                                    <TableHeader>Department Head</TableHeader>
                                     <TableHeader>Purpose</TableHeader>
                                     <TableHeader>Date of Filing</TableHeader>
                                     <TableHeader>Date of Use</TableHeader>
                                     <TableHeader>Time of Use</TableHeader>
                                     <TableHeader>Status</TableHeader>
                                     <TableHeader>Request Details</TableHeader>
-                                    <TableHeader>Created At</TableHeader>
+                                    <TableHeader>Remarks </TableHeader>
                                     <TableHeader>Actions</TableHeader>
                                 </tr>
                             </thead>
                             <tbody className="tableContent">
                                 {logs.map((log) => (
                                     <tr key={log.id}>
-                                        <TableCell style={{ fontSize: "18px" }}>{log.id}</TableCell>
+                                        <TableCell style={{ fontSize: "18px" }}>
+                                            {renderTicketType(log.ticket)}
+                                        </TableCell>
+                                        <TableCell style={{ fontSize: "18px" }}>{log.dept}</TableCell>
                                         <TableCell style={{ fontSize: "18px" }}>
                                             {renderValue(log.requestorName)}
                                         </TableCell>
-                                        <TableCell style={{ fontSize: "18px" }}>{renderValue(log.dept)}</TableCell>
+                                        <TableCell style={{ fontSize: "18px" }}>{renderValue(log.DeptHead)}</TableCell>
                                         <TableCell style={{ fontSize: "18px" }}>{renderValue(log.purpose)}</TableCell>
                                         <TableCell style={{ fontSize: "18px" }}>
                                             {formatDate(log.dateOfFiling)}
                                         </TableCell>
                                         <TableCell style={{ fontSize: "18px" }}>{formatDate(log.dateOfUse)}</TableCell>
-                                        <TableCell style={{ fontSize: "18px" }}>{renderValue(log.timeOfUse)}</TableCell>
-                                        <TableCell style={{ fontSize: "18px" }}>{renderValue(log.status)}</TableCell>
+                                        <TableCell style={{ fontSize: "18px" }}>{renderValue(log.timeOfUseStart)} - {renderValue(log.timeOfUseEnd)}</TableCell>
+                                        <TableCell style={{ fontSize: "18px" }}>
+                                            {renderStatusBadge(renderValue(log.status))}
+                                        </TableCell>
                                         <TableCell style={{ fontSize: "18px" }}>{renderRequestDetails(log)}</TableCell>
-                                        <TableCell style={{ fontSize: "18px" }}>{formatDate(log.created_at)}</TableCell>
+                                        <TableCell style={{ fontSize: "18px" }}>{renderValue(log.remarks)}</TableCell>
                                         <TableCell style={{ fontSize: "18px" }}>{/* Actions column empty */}</TableCell>
                                     </tr>
                                 ))}

@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
 import "./Requestpage.css";
 import logo from "../../img/MMCM_Logo.svg";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBackspace } from "@fortawesome/free-solid-svg-icons";
 
-const FacilitiesEquipments = ({ user }) => {
+const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
     console.log("username:" + user.username);
     const [requestorName, setRequestorName] = useState("");
     const [dept, setDept] = useState("");
     const [purpose, setPurpose] = useState("");
     const [dateOfFiling, setDateOfFiling] = useState("");
     const [dateOfUse, setDateOfUse] = useState("");
-    const [timeOfUse, setTimeOfUse] = useState("");
+    const [timeOfUseStart, setTimeOfUseStart] = useState("");
+    const [timeOfUseEnd, setTimeOfUseEnd] = useState("");
     const [furnitures, setFurnitures] = useState({
         chairs: false,
         tables: false,
@@ -229,7 +232,8 @@ const FacilitiesEquipments = ({ user }) => {
             purpose,
             dateOfFiling,
             dateOfUse,
-            timeOfUse,
+            timeOfUseStart,
+            timeOfUseEnd,
             schoolBuilding: {
                 lectureRoom: schoolBuilding.lectureRoom,
                 drawingRoom: schoolBuilding.drawingRoom,
@@ -353,6 +357,12 @@ const FacilitiesEquipments = ({ user }) => {
     return (
         <div className="PageContainer">
             <div className="FormContainer">
+                <FontAwesomeIcon
+                    icon={faBackspace}
+                    style={{ position: "relative", justifySelf: "start", cursor: "pointer" }}
+                    size="xl"
+                    onClick={disableFacilitiesWindow}
+                />
                 <div className="grid-container">
                     {/* Logo */}
                     <div className="logo-container">
@@ -453,12 +463,21 @@ const FacilitiesEquipments = ({ user }) => {
                             />
                         </div>
                         <div className="FormGroup">
-                            <label className="Label">Time of Use</label>
+                            <label className="Label">Time of Use (Start)</label>
                             <input
                                 type="time"
                                 className="Input"
-                                value={timeOfUse}
-                                onChange={(e) => setTimeOfUse(e.target.value)}
+                                value={timeOfUseStart}
+                                onChange={(e) => setTimeOfUseStart(e.target.value)}
+                            />
+                        </div>
+                        <div className="FormGroup">
+                            <label className="Label">Time of Use (End)</label>
+                            <input
+                                type="time"
+                                className="Input"
+                                value={timeOfUseEnd}
+                                onChange={(e) => setTimeOfUseEnd(e.target.value)}
                             />
                         </div>
                     </div>
@@ -1037,6 +1056,7 @@ const FacilitiesEquipments = ({ user }) => {
                                     value="computer"
                                     checked={device.computer}
                                     onChange={handleDeviceChange}
+                                    
                                 />
                                 <label>Computer</label>
                                 <ul>

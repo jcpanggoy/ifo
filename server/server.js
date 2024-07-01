@@ -23,7 +23,6 @@ db.connect((err) => {
     console.log("Connected to database.");
 });
 
-
 app.post("/login", (req, res) => {
     const { username, password } = req.body;
     const sql = "SELECT * FROM users WHERE username = ? AND password = ?";
@@ -49,15 +48,16 @@ app.post("/login", (req, res) => {
     });
 });
 
-// to be edited after cars form
 app.post("/saveCRequest", (req, res) => {
+    console.log(req);
     const {
         requestorName,
         dept,
         purpose,
         dateOfFiling,
         dateOfUse,
-        timeOfUse,
+        timeOfUseStart,
+        timeOfUseEnd,
         schoolBuilding,
         others,
         adminBuilding,
@@ -79,19 +79,28 @@ app.post("/saveCRequest", (req, res) => {
         carsQty,
     } = req.body;
 
-    // Filter out any unnecessary fields from cars and carsQuantities
-    const filterCarsQty = (obj) => {
+    // Function to filter nested car models based on 'checked' property and 'qty' greater than zero
+    const filterCarModels = (models) => {
         return Object.fromEntries(
-            Object.entries(obj).filter(([key, value]) => value.checked || value.qty > 0)
+            Object.entries(models).filter(([modelKey, modelValue]) => modelValue.checked && modelValue.qty > 0)
         );
+    };
+
+    // Function to filter top-level car categories
+    const filterCarsQty = (cars) => {
+        const filtered = {};
+        Object.keys(cars).forEach((carType) => {
+            const filteredModels = filterCarModels(cars[carType]);
+            if (Object.keys(filteredModels).length > 0) {
+                filtered[carType] = filteredModels;
+            }
+        });
+        return filtered;
     };
 
     const filterObject = (obj) => {
-        return Object.fromEntries(
-            Object.entries(obj).filter(([key, value]) => value)
-        );
+        return Object.fromEntries(Object.entries(obj).filter(([key, value]) => value));
     };
-
 
     const filteredSchoolBuilding = filterObject(schoolBuilding);
     const filteredOthers = filterObject(others);
@@ -109,14 +118,14 @@ app.post("/saveCRequest", (req, res) => {
     const filteredOtherEquipment = filterObject(otherEquipment);
     const filteredCarsQty = filterCarsQty(carsQty);
 
-    const sql = `
-    INSERT INTO request (
+    const sql = `INSERT INTO request (
         requestorName,
         dept,
         purpose,
         dateOfFiling,
         dateOfUse,
-        timeOfUse,
+        timeOfUseStart,
+        timeOfUseEnd,
         schoolBuilding,
         others,
         adminBuilding,
@@ -136,16 +145,15 @@ app.post("/saveCRequest", (req, res) => {
         DeptHead,
         ticket,
         carsQty
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     const values = [
         requestorName,
         dept,
         purpose,
         dateOfFiling,
         dateOfUse,
-        timeOfUse,
+        timeOfUseStart,
+        timeOfUseEnd,
         JSON.stringify(filteredSchoolBuilding),
         JSON.stringify(filteredOthers),
         JSON.stringify(filteredAdminBuilding),
@@ -175,7 +183,6 @@ app.post("/saveCRequest", (req, res) => {
     });
 });
 
-
 app.post("/saveRequest", (req, res) => {
     const {
         requestorName,
@@ -183,7 +190,8 @@ app.post("/saveRequest", (req, res) => {
         purpose,
         dateOfFiling,
         dateOfUse,
-        timeOfUse,
+        timeOfUseStart,
+        timeOfUseEnd,
         schoolBuilding,
         others,
         adminBuilding,
@@ -202,18 +210,11 @@ app.post("/saveRequest", (req, res) => {
         remarks = "None", // Default remarks to "None" if not provided
         user,
         ticket,
-        carsQty,
+        carsQty = "",
     } = req.body;
 
     const filterObject = (obj) => {
-        return Object.fromEntries(
-            Object.entries(obj).filter(([key, value]) => value)
-        );
-    };
-    const filterCarsQty = (obj) => {
-        return Object.fromEntries(
-            Object.entries(obj).filter(([key, value]) => value.checked || value.qty > 0)
-        );
+        return Object.fromEntries(Object.entries(obj).filter(([key, value]) => value));
     };
 
     const filteredSchoolBuilding = filterObject(schoolBuilding);
@@ -230,16 +231,15 @@ app.post("/saveRequest", (req, res) => {
     const filteredAccessoriesQty = filterObject(accessoriesQty);
     const filteredSportsEquipment = filterObject(sportsEquipment);
     const filteredOtherEquipment = filterObject(otherEquipment);
-    const filteredCarsQty = filterCarsQty(carsQty);
 
-    const sql = `
-        INSERT INTO request (
+    const sql = `INSERT INTO request (
             requestorName,
             dept,
             purpose,
             dateOfFiling,
             dateOfUse,
-            timeOfUse,
+            timeOfUseStart,
+        timeOfUseEnd,
             schoolBuilding,
             others,
             adminBuilding,
@@ -259,16 +259,15 @@ app.post("/saveRequest", (req, res) => {
             DeptHead,
             ticket,
             carsQty
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     const values = [
         requestorName,
         dept,
         purpose,
         dateOfFiling,
         dateOfUse,
-        timeOfUse,
+        timeOfUseStart,
+        timeOfUseEnd,
         JSON.stringify(filteredSchoolBuilding),
         JSON.stringify(filteredOthers),
         JSON.stringify(filteredAdminBuilding),
@@ -287,7 +286,7 @@ app.post("/saveRequest", (req, res) => {
         remarks,
         user,
         ticket,
-        JSON.stringify(filteredCarsQty),
+        carsQty,
     ];
 
     db.query(sql, values, (err, results) => {
@@ -336,9 +335,7 @@ app.get("/api/logs", (req, res) => {
     }
     if (req.query.statuses) {
         const statuses = req.query.statuses.split(",");
-        filters.push(
-            `status IN (${statuses.map((status) => `'${status}'`).join(",")})`
-        );
+        filters.push(`status IN (${statuses.map((status) => `'${status}'`).join(",")})`);
     }
 
     if (filters.length > 0) {
@@ -354,8 +351,7 @@ app.get("/api/logs", (req, res) => {
 });
 
 app.get("/api/category_counts", (req, res) => {
-    const departmentQuery =
-        "SELECT dept as department, COUNT(*) as count FROM request GROUP BY dept";
+    const departmentQuery = "SELECT dept as department, COUNT(*) as count FROM request GROUP BY dept";
     const statusQuery = req.query.department
         ? "SELECT status, COUNT(*) as count FROM request WHERE dept = ? GROUP BY status"
         : "SELECT status, COUNT(*) as count FROM request GROUP BY status";

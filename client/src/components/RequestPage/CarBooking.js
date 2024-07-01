@@ -1,75 +1,81 @@
 import React, { useState, useEffect } from "react";
 import "./Requestpage.css";
 import logo from "../../img/MMCM_Logo.svg";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBackspace } from "@fortawesome/free-solid-svg-icons";
 
-const CarBooking = ({ user }) => {
+const CarBooking = ({ user, disableCarWindow }) => {
     const [requestorName, setRequestorName] = useState("");
     const [dept, setDept] = useState("");
     const [purpose, setPurpose] = useState("");
     const [dateOfFiling, setDateOfFiling] = useState("");
     const [dateOfUse, setDateOfUse] = useState("");
-    const [timeOfUse, setTimeOfUse] = useState("");
+    const [timeOfUseStart, setTimeOfUseStart] = useState("");
+    const [timeOfUseEnd, setTimeOfUseEnd] = useState("");
     const [carsQty, setCarsQty] = useState({
         //Sedan: Civic, Corolla, BMW
         //Van: Sienna, Odyssey, Transit
         //Bus: Transit Bus, Express, T-Liner
+
         sedan: {
-            checked: false,
-            qty: 0,
-        },
-        civic: {
-            checked: false,
-            qty: 0,
-        },
-        corolla: {
-            checked: false,
-            qty: 0,
-        },
-        bmw: {
-            checked: false,
-            qty: 0,
+            civic: {
+                checked: false,
+                qty: 0,
+            },
+            corolla: {
+                checked: false,
+                qty: 0,
+            },
+            bmw: {
+                checked: false,
+                qty: 0,
+            },
         },
         van: {
-            checked: false,
-            qty: 0,
+            sienna: {
+                checked: false,
+                qty: 0,
+            },
+            odyssey: {
+                checked: false,
+                qty: 0,
+            },
+            transit: {
+                checked: false,
+                qty: 0,
+            },
         },
-        sienna: {
-            checked: false,
-            qty: 0,
-        },
-        odyssey: {
-            checked: false,
-            qty: 0,
-        },
-        transit: {
-            checked: false,
-            qty: 0,
-        },
-        transitBus: {
-            checked: false,
-            qty: 0,
-        },
-        express: {
-            checked: false,
-            qty: 0,
-        },
-        t_Liner: {
-            checked: false,
-            qty: 0,
+        bus: {
+            transitBus: {
+                checked: false,
+                qty: 0,
+            },
+            express: {
+                checked: false,
+                qty: 0,
+            },
+            tLiner: {
+                checked: false,
+                qty: 0,
+            },
         },
     });
 
     const handleCarsQtyChange = (e) => {
         const { name, value, type, checked } = e.target;
+        const [carType, carModel] = name.split("_");
+
         setCarsQty((prev) => ({
             ...prev,
-            [name]: type === "checkbox" ? { ...prev[name], checked } : { ...prev[name], qty: Number(value) },
+            [carType]: {
+                ...prev[carType],
+                [carModel]: {
+                    ...prev[carType][carModel],
+                    ...(type === "checkbox" ? { checked } : { qty: Number(value) }),
+                },
+            },
         }));
     };
-
-    useEffect(() => {
-        setDept(user.username);
-    }, [user.username]);
 
     const handleSubmit = async () => {
         const formData = {
@@ -78,7 +84,8 @@ const CarBooking = ({ user }) => {
             purpose,
             dateOfFiling,
             dateOfUse,
-            timeOfUse,
+            timeOfUseStart,
+            timeOfUseEnd,
             schoolBuilding: "",
             others: "",
             adminBuilding: "",
@@ -94,7 +101,7 @@ const CarBooking = ({ user }) => {
             sportsEquipment: "",
             otherEquipment: "",
 
-            user: user.username,
+            user: user.fullnaname,
             ticket: 1,
             carsQty,
         };
@@ -119,9 +126,19 @@ const CarBooking = ({ user }) => {
         }
     };
 
+    useEffect(() => {
+        setDept(user.username);
+    }, [user.username]);
+
     return (
         <div className="PageContainer">
             <div className="FormContainer">
+                <FontAwesomeIcon
+                    icon={faBackspace}
+                    style={{ position: "relative", justifySelf: "start", cursor: "pointer" }}
+                    size="xl"
+                    onClick={disableCarWindow}
+                />
                 <div className="grid-container">
                     {/* Logo */}
                     <div className="logo-container">
@@ -221,12 +238,21 @@ const CarBooking = ({ user }) => {
                             />
                         </div>
                         <div className="FormGroup">
-                            <label className="Label">Time of Use</label>
+                            <label className="Label">Time of Use (Start)</label>
                             <input
                                 type="time"
                                 className="Input"
-                                value={timeOfUse}
-                                onChange={(e) => setTimeOfUse(e.target.value)}
+                                value={timeOfUseStart}
+                                onChange={(e) => setTimeOfUseStart(e.target.value)}
+                            />
+                        </div>
+                        <div className="FormGroup">
+                            <label className="Label">Time of Use (End)</label>
+                            <input
+                                type="time"
+                                className="Input"
+                                value={timeOfUseEnd}
+                                onChange={(e) => setTimeOfUseEnd(e.target.value)}
                             />
                         </div>
                     </div>
@@ -239,60 +265,66 @@ const CarBooking = ({ user }) => {
                         {/* Sedan */}
                         <div className="accessories">
                             <h3>Sedan</h3>
+
+                            {/*---------- CIVIC -----------------*/}
                             <div>
                                 <input
                                     type="checkbox"
-                                    name="sedan"
-                                    checked={carsQty.sedan.checked}
+                                    name="sedan_civic"
+                                    checked={carsQty.sedan.civic.checked}
                                     onChange={handleCarsQtyChange}
                                 />
-                                <label>Honda Civic</label>
+                                <label>Civic</label>
                                 <input
                                     type="number"
-                                    name="civic"
-                                    value={carsQty.civic.qty}
+                                    name="sedan_civic"
+                                    value={carsQty.sedan.civic.qty}
                                     className="quantity-input"
                                     onChange={handleCarsQtyChange}
                                     min="0"
-                                    placeholder="Qty"
-                                    disabled={!carsQty.sedan.checked}
+                                    disabled={!carsQty.sedan.civic.checked}
                                 />
                             </div>
+
+                            {/* -------------------------------- */}
+                            {/* ----------Corolla----------- */}
+
                             <div>
                                 <input
                                     type="checkbox"
-                                    name="civic"
-                                    checked={carsQty.civic.checked}
+                                    name="sedan_corolla"
+                                    checked={carsQty.sedan.corolla.checked}
                                     onChange={handleCarsQtyChange}
                                 />
                                 <label>Toyota Corolla</label>
                                 <input
                                     type="number"
-                                    name="corolla"
-                                    value={carsQty.corolla.qty}
+                                    name="sedan_corolla"
+                                    value={carsQty.sedan.corolla.qty}
                                     className="quantity-input"
                                     onChange={handleCarsQtyChange}
                                     min="0"
-                                    placeholder="Qty"
-                                    disabled={!carsQty.civic.checked}
+                                    disabled={!carsQty.sedan.corolla.checked}
                                 />
                             </div>
+
+                            {/* -------------------------------- */}
                             <div>
                                 <input
                                     type="checkbox"
-                                    name="corolla"
-                                    checked={carsQty.corolla.checked}
+                                    name="sedan_bmw"
+                                    checked={carsQty.sedan.bmw.checked}
                                     onChange={handleCarsQtyChange}
                                 />
                                 <label>BMW 3 Series</label>
                                 <input
                                     type="number"
-                                    name="bmw"
-                                    value={carsQty.bmw.qty}
+                                    name="sedan_bmw"
+                                    value={carsQty.sedan.bmw.qty}
                                     className="quantity-input"
                                     onChange={handleCarsQtyChange}
                                     min="0"
-                                    disabled={!carsQty.corolla.checked}
+                                    disabled={!carsQty.sedan.bmw.checked}
                                 />
                             </div>
                         </div>
@@ -303,55 +335,55 @@ const CarBooking = ({ user }) => {
                             <div>
                                 <input
                                     type="checkbox"
-                                    name="van"
-                                    checked={carsQty.van.checked}
+                                    name="van_sienna"
+                                    checked={carsQty.van.sienna.checked}
                                     onChange={handleCarsQtyChange}
                                 />
                                 <label>Toyota Sienna</label>
                                 <input
                                     type="number"
-                                    name="sienna"
-                                    value={carsQty.sienna.qty}
+                                    name="van_sienna"
+                                    value={carsQty.van.sienna.qty}
                                     className="quantity-input"
                                     onChange={handleCarsQtyChange}
                                     min="0"
-                                    disabled={!carsQty.van.checked}
+                                    disabled={!carsQty.van.sienna.checked}
                                 />
                             </div>
                             <div>
                                 <input
                                     type="checkbox"
-                                    name="sienna"
-                                    checked={carsQty.sienna.checked}
+                                    name="van_odyssey"
+                                    checked={carsQty.van.odyssey.checked}
                                     onChange={handleCarsQtyChange}
                                 />
                                 <label>Honda Odyssey</label>
                                 <input
                                     type="number"
-                                    name="odyssey"
-                                    value={carsQty.odyssey.qty}
+                                    name="van_odyssey"
+                                    value={carsQty.van.odyssey.qty}
                                     className="quantity-input"
                                     onChange={handleCarsQtyChange}
                                     min="0"
-                                    disabled={!carsQty.sienna.checked}
+                                    disabled={!carsQty.van.odyssey.checked}
                                 />
                             </div>
                             <div>
                                 <input
                                     type="checkbox"
-                                    name="odyssey"
-                                    checked={carsQty.odyssey.checked}
+                                    name="van_transit"
+                                    checked={carsQty.van.transit.checked}
                                     onChange={handleCarsQtyChange}
                                 />
                                 <label>Ford Transit</label>
                                 <input
                                     type="number"
-                                    name="transit"
-                                    value={carsQty.transit.qty}
+                                    name="van_transit"
+                                    value={carsQty.van.transit.qty}
                                     className="quantity-input"
                                     onChange={handleCarsQtyChange}
                                     min="0"
-                                    disabled={!carsQty.odyssey.checked}
+                                    disabled={!carsQty.van.transit.checked}
                                 />
                             </div>
                         </div>
@@ -362,58 +394,55 @@ const CarBooking = ({ user }) => {
                             <div>
                                 <input
                                     type="checkbox"
-                                    name="transitBus"
-                                    checked={carsQty.transitBus.checked}
+                                    name="bus_transitBus"
+                                    checked={carsQty.bus.transitBus.checked}
                                     onChange={handleCarsQtyChange}
                                 />
                                 <label>Ford Transit Bus</label>
                                 <input
                                     type="number"
-                                    name="transitBus"
-                                    value={carsQty.transitBus.qty}
+                                    name="bus_transitBus"
+                                    value={carsQty.bus.transitBus.qty}
                                     className="quantity-input"
                                     onChange={handleCarsQtyChange}
                                     min="0"
-                                    placeholder="Qty"
-                                    disabled={!carsQty.transitBus.checked}
+                                    disabled={!carsQty.bus.transitBus.checked}
                                 />
                             </div>
                             <div>
                                 <input
                                     type="checkbox"
-                                    name="express"
-                                    checked={carsQty.express.checked}
+                                    name="bus_express"
+                                    checked={carsQty.bus.express.checked}
                                     onChange={handleCarsQtyChange}
                                 />
                                 <label>Chevrolet Express</label>
                                 <input
                                     type="number"
-                                    name="express"
-                                    value={carsQty.express.qty}
+                                    name="bus_express"
+                                    value={carsQty.bus.express.qty}
                                     className="quantity-input"
                                     onChange={handleCarsQtyChange}
                                     min="0"
-                                    placeholder="Qty"
-                                    disabled={!carsQty.express.checked}
+                                    disabled={!carsQty.bus.express.checked}
                                 />
                             </div>
                             <div>
                                 <input
                                     type="checkbox"
-                                    name="t_Liner"
-                                    checked={carsQty.t_Liner.checked}
+                                    name="bus_tLiner"
+                                    checked={carsQty.bus.tLiner.checked}
                                     onChange={handleCarsQtyChange}
                                 />
                                 <label>T-Built Saf-T-Liner</label>
                                 <input
                                     type="number"
-                                    name="t_Liner"
-                                    value={carsQty.t_Liner.qty}
+                                    name="bus_tLiner"
+                                    value={carsQty.bus.tLiner.qty}
                                     className="quantity-input"
                                     onChange={handleCarsQtyChange}
                                     min="0"
-                                    placeholder="Qty"
-                                    disabled={!carsQty.t_Liner.checked}
+                                    disabled={!carsQty.bus.tLiner.checked}
                                 />
                             </div>
                         </div>

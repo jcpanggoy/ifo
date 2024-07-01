@@ -55,7 +55,6 @@
 }
 
 .PageContainer {
-    /* background-color: #f0f0f0; */
     background: linear-gradient(to top, #cdcdcd, #dcdcdc, #e5e5e5);
     display: flex;
     justify-content: center;

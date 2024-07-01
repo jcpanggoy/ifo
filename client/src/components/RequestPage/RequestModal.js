@@ -3,6 +3,14 @@ import styled from "styled-components";
 import "./Requestpage.css";
 
 const RequestModal = ({ handleCar, handleEquipment }) => {
+    const handleLogout = () => {
+        localStorage.removeItem("user");
+        localStorage.removeItem("loggedIn");
+        localStorage.removeItem("timeLeft");
+
+        window.location.reload();
+    };
+
     return (
         <>
             <section
@@ -14,8 +22,7 @@ const RequestModal = ({ handleCar, handleEquipment }) => {
                     justifyContent: "center",
                     alignItems: "center",
                     // backgroundColor: "gray",
-                    background:
-                        "linear-gradient(45deg, #0B0E4E, #0A3C8C, #FFFFFF, #D99C9A, #B51E1E, #8D1D1D)",
+                    background: "linear-gradient(45deg, #0B0E4E, #0A3C8C, #FFFFFF, #D99C9A, #B51E1E, #8D1D1D)",
                     backgroundSize: "600% 600%",
                     animation: "gradientAnimation 15s ease infinite",
                 }}
@@ -52,12 +59,10 @@ const RequestModal = ({ handleCar, handleEquipment }) => {
 
                         <div style={{ textAlign: "center" }}>
                             <p>
-                                Through this system, you can easily book
-                                facilities, equipments, or vehicles from the
+                                Through this system, you can easily book facilities, equipments, or vehicles from the
                                 school.
                                 <br />
-                                Simply select the type of resource you need and
-                                complete the form.
+                                Simply select the type of resource you need and complete the form.
                             </p>
                         </div>
 
@@ -68,7 +73,15 @@ const RequestModal = ({ handleCar, handleEquipment }) => {
                                 marginBottom: "20px",
                             }}
                         ></div>
-                        <div style={{ display: "flex", gap: "10px" }}>
+                        <div
+                            style={{
+                                display: "flex",
+                                gap: "10px",
+                                width: "300px",
+                                justifyContent: "center",
+                                flexWrap: "wrap",
+                            }}
+                        >
                             <button
                                 onClick={handleEquipment}
                                 className="finish-button"
@@ -80,6 +93,12 @@ const RequestModal = ({ handleCar, handleEquipment }) => {
                                 className="finish-button"
                             >
                                 Vehicles
+                            </button>
+                            <button
+                                className="finish-button"
+                                onClick={handleLogout}
+                            >
+                                Logout
                             </button>
                         </div>
                     </div>
