@@ -11,8 +11,9 @@ import MCMLogo from "../../img/MMCM_Logo.svg";
 import { useNavigate } from "react-router-dom";
 
 const Sidebar = styled.section`
-    width: 10vw;
-    height: 100vh;
+    width: 13vw;
+    min-width: 200px; // Ensure minimum width for better responsiveness
+    height: 100%; // Change height to auto to match the content height
     background-color: #fafafa;
     color: black;
     box-shadow: 5px 0px 12px 0px rgba(0, 0, 0, 0.75);
@@ -23,13 +24,18 @@ const Sidebar = styled.section`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    position: fixed; // Make sidebar fixed to ensure it stays in place
+    /* top: 0;
+    left: 0;
+    bottom: 0; */
 `;
 
 const SidebarContainer = styled.div`
-    height: 85%;
+    flex: 1; // Allow sidebar container to grow and fill available space
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow-y: auto; // Allow scrolling if content overflows
 `;
 
 const SidebarImgContainer = styled.div`
@@ -72,7 +78,8 @@ const List = styled.li`
     background-color: ${({ active }) => (active ? "#AB0F11" : "transparent")};
     width: 100%;
     height: 50px;
-    justify-content: center;
+    /* justify-content: center; */
+    padding-left: 40px;
 
     &:hover {
         background-color: #ab0f11;
@@ -114,12 +121,11 @@ const LogoutButton = styled.button`
 
 const handleLogout = () => {
     localStorage.removeItem("user");
-    localStorage.removeItem("loggedIn");
-    localStorage.removeItem("timeLeft");
+    localStorage.removeItem("token");
+    // localStorage.removeItem("timeLeft");
 
     window.location.reload();
 };
-
 
 const SidebarComponent = ({ openLogs, openCalendar, openRequests, activeItem }) => {
     return (

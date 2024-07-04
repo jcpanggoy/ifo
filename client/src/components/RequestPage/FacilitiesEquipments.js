@@ -1,13 +1,21 @@
 import React, { useState, useEffect } from "react";
+import styled from "styled-components";
 import "./Requestpage.css";
 import logo from "../../img/MMCM_Logo.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBackspace } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+
+const MainContainer = styled.section``;
+
+const FormContainer = styled.div``;
+
+const GridContainer = styled.div``;
 
 const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
     console.log("username:" + user.username);
     const [requestorName, setRequestorName] = useState("");
     const [dept, setDept] = useState("");
+
     const [purpose, setPurpose] = useState("");
     const [dateOfFiling, setDateOfFiling] = useState("");
     const [dateOfUse, setDateOfUse] = useState("");
@@ -173,7 +181,7 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
 
     const handleTvQtyChange = (e) => {
         const { name, value } = e.target;
-        setTquantities((prev) => ({ ...prev, [name]: Number(value) }));
+        setTelev((prev) => ({ ...prev, [name]: Number(value) }));
     };
 
     const handleDeviceChange = (e) => {
@@ -330,12 +338,11 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
             },
             user: user.fullname,
             ticket: 0,
-            cars: "",
-            carsQuantities: "",
+            carsQty: "",
         };
 
         try {
-            const response = await fetch("http://192.168.254.113:4002/saveRequest", {
+            const response = await fetch("http://10.10.4.44:4000/saveRequest", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -357,55 +364,51 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
     return (
         <div className="PageContainer">
             <div className="FormContainer">
-                <FontAwesomeIcon
-                    icon={faBackspace}
-                    style={{ position: "relative", justifySelf: "start", cursor: "pointer" }}
-                    size="xl"
-                    onClick={disableFacilitiesWindow}
-                />
-                <div className="grid-container">
-                    {/* Logo */}
-                    <div className="logo-container">
-                        <img
-                            src={logo}
-                            alt="Logo"
-                            style={{ width: "100px", height: "auto" }}
-                        />
-                    </div>
-                    {/* Revision No. and Date */}
-                    <div className="revision-container">
-                        <p style={{ margin: "0" }}>
-                            REVISION NO: <strong>002</strong>
-                        </p>
-                        <p style={{ margin: "0" }}>
-                            REVISION DATE: <strong>30-Aug-23</strong>
-                        </p>
-                    </div>
+                <div
+                    className="grid-container"
+                    style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        paddingBottom: "25px",
+                    }}
+                >
+                    <FontAwesomeIcon
+                        icon={faArrowLeft}
+                        style={{ cursor: "pointer", color: "#090E35", width: "100px", height: "40px" }}
+                        onClick={disableFacilitiesWindow}
+                    />
+                    <img
+                        src={logo}
+                        alt="Logo"
+                        style={{ width: "100px", height: "auto" }}
+                    />
                 </div>
 
                 <div className="grid-container">
-                    <div className="requestForm">
+                    <div className="requestFormFacis">
                         <h1
                             style={{
-                                gridColumn: "1 /span 2",
+                                display: "block",
+                                gridColumn: "1",
                                 textAlign: "center",
                                 textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
                             }}
                         >
-                            PERMIT TO USE FACILITIES AND EQUIPMENT
+                            PERMIT TO USE FACILITIES AND EQUIPMENTS
                         </h1>
 
                         {/* Instructions */}
-                        <div>
+                        <div style={{ gridRow: "2 " }}>
                             <p className="instructions">
-                                1. This form must be accomplished in 3 copies prior to the use of any MMCM facilities.{" "}
+                                1. This form must be accomplished in 3 copies prior to the use of any MMCM vehicles.{" "}
                                 <br />
-                                2. The use of such equipment/facilities is subject to the discretion of MMCM. <br />
+                                2. The use of such vehicles is subject to the discretion of MMCM. <br />
                                 3. The requester shall be held accountable in case of breakage and/or loss of items
                                 during the time of use. <br />
                                 The requester agrees to replace the item(s) with the same brand or its equivalent.{" "}
                                 <br />
-                                4. The requester must return the borrowed item(s) at the end of the requested time of
+                                4. The requester must return the borrowed vehicle(s) at the end of the requested time of
                                 use.
                             </p>
                             <div className="divider"></div>
@@ -492,6 +495,7 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                             <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="lectureRoom"
                                     name="lectureRoom"
                                     checked={schoolBuilding.lectureRoom}
                                     onChange={(e) =>
@@ -501,11 +505,12 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         })
                                     }
                                 />
-                                <label>Lecture Room</label>
+                                <label htmlFor="lectureRoom">Lecture Room</label>
                             </div>
                             <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="drawingRoom"
                                     name="drawingRoom"
                                     checked={schoolBuilding.drawingRoom}
                                     onChange={(e) =>
@@ -515,11 +520,12 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         })
                                     }
                                 />
-                                <label>Drawing Room</label>
+                                <label htmlFor="drawingRoom">Drawing Room</label>
                             </div>
                             <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="computerLab"
                                     name="computerLab"
                                     checked={schoolBuilding.computerLab}
                                     onChange={(e) =>
@@ -529,11 +535,12 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         })
                                     }
                                 />
-                                <label>Computer Lab</label>
+                                <label htmlFor="computerLab">Computer Lab</label>
                             </div>
                             <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="physicsLab"
                                     name="physicsLab"
                                     checked={schoolBuilding.physicsLab}
                                     onChange={(e) =>
@@ -543,11 +550,12 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         })
                                     }
                                 />
-                                <label>Physics Lab</label>
+                                <label htmlFor="physicsLab">Physics Lab</label>
                             </div>
                             <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="chemistryLab"
                                     name="chemistryLab"
                                     checked={schoolBuilding.chemistryLab}
                                     onChange={(e) =>
@@ -557,11 +565,12 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         })
                                     }
                                 />
-                                <label>Chemistry Lab</label>
+                                <label htmlFor="chemistryLab">Chemistry Lab</label>
                             </div>
                             <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="engineeringLab"
                                     name="engineeringLab"
                                     checked={schoolBuilding.engineeringLab}
                                     onChange={(e) =>
@@ -571,7 +580,7 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         })
                                     }
                                 />
-                                <label>Engineering Lab</label>
+                                <label htmlFor="engineeringLab">Engineering Lab</label>
                             </div>
                         </div>
                     </div>
@@ -584,6 +593,7 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                             <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="playcourt1"
                                     name="playcourt1"
                                     checked={others.playcourt1}
                                     onChange={(e) =>
@@ -593,11 +603,12 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         })
                                     }
                                 />
-                                <label>Playcourt 1</label>
+                                <label htmlFor="playcourt1">Playcourt 1</label>
                             </div>
                             <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="playcourt2"
                                     name="playcourt2"
                                     checked={others.playcourt2}
                                     onChange={(e) =>
@@ -607,11 +618,12 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         })
                                     }
                                 />
-                                <label>Playcourt 2</label>
+                                <label htmlFor="playcourt2">Playcourt 2</label>
                             </div>
                             <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="playcourt3"
                                     name="playcourt3"
                                     checked={others.playcourt3}
                                     onChange={(e) =>
@@ -621,11 +633,12 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         })
                                     }
                                 />
-                                <label>Playcourt 3</label>
+                                <label htmlFor="playcourt3">Playcourt 3</label>
                             </div>
                             <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="playcourt4"
                                     name="playcourt4"
                                     checked={others.playcourt4}
                                     onChange={(e) =>
@@ -635,11 +648,12 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         })
                                     }
                                 />
-                                <label>Playcourt 4</label>
+                                <label htmlFor="playcourt4">Playcourt 4</label>
                             </div>
                             <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="playcourtRoom1"
                                     name="playcourtRoom1"
                                     checked={others.playcourtRoom1}
                                     onChange={(e) =>
@@ -649,11 +663,12 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         })
                                     }
                                 />
-                                <label>Playcourt Room 1</label>
+                                <label htmlFor="playcourtRoom1">Playcourt Room 1</label>
                             </div>
                             <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="playcourtRoom2"
                                     name="playcourtRoom2"
                                     checked={others.playcourtRoom2}
                                     onChange={(e) =>
@@ -663,11 +678,12 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         })
                                     }
                                 />
-                                <label>Playcourt Room 2</label>
+                                <label htmlFor="playcourtRoom2">Playcourt Room 2</label>
                             </div>
                             <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="volleyballCourt"
                                     name="volleyballCourt"
                                     checked={others.volleyballCourt}
                                     onChange={(e) =>
@@ -677,11 +693,12 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         })
                                     }
                                 />
-                                <label>Volleyball Court</label>
+                                <label htmlFor="volleyballCourt">Volleyball Court</label>
                             </div>
                             <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="futsal"
                                     name="futsal"
                                     checked={others.futsal}
                                     onChange={(e) =>
@@ -691,7 +708,7 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         })
                                     }
                                 />
-                                <label>Futsal</label>
+                                <label htmlFor="futsal">Futsal</label>
                             </div>
                         </div>
                     </div>
@@ -703,6 +720,7 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                             <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="auditorium1"
                                     name="auditorium1"
                                     checked={adminBuilding.auditorium1}
                                     onChange={(e) =>
@@ -712,11 +730,12 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         })
                                     }
                                 />
-                                <label>Auditorium 1</label>
+                                <label htmlFor="auditorium1">Auditorium 1</label>
                             </div>
                             <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="auditorium2"
                                     name="auditorium2"
                                     checked={adminBuilding.auditorium2}
                                     onChange={(e) =>
@@ -726,11 +745,12 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         })
                                     }
                                 />
-                                <label>Auditorium 2</label>
+                                <label htmlFor="auditorium2">Auditorium 2</label>
                             </div>
                             <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="auditorium3"
                                     name="auditorium3"
                                     checked={adminBuilding.auditorium3}
                                     onChange={(e) =>
@@ -740,11 +760,12 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         })
                                     }
                                 />
-                                <label>Auditorium 3</label>
+                                <label htmlFor="auditorium3">Auditorium 3</label>
                             </div>
                             <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="seminarRoom1"
                                     name="seminarRoom1"
                                     checked={adminBuilding.seminarRoom1}
                                     onChange={(e) =>
@@ -754,11 +775,12 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         })
                                     }
                                 />
-                                <label>Seminar Room 1</label>
+                                <label htmlFor="seminarRoom1">Seminar Room 1</label>
                             </div>
                             <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="seminarRoom2"
                                     name="seminarRoom2"
                                     checked={adminBuilding.seminarRoom2}
                                     onChange={(e) =>
@@ -768,11 +790,12 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         })
                                     }
                                 />
-                                <label>Seminar Room 2</label>
+                                <label htmlFor="seminarRoom2">Seminar Room 2</label>
                             </div>
                             <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="seminarRoom3"
                                     name="seminarRoom3"
                                     checked={adminBuilding.seminarRoom3}
                                     onChange={(e) =>
@@ -782,11 +805,12 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         })
                                     }
                                 />
-                                <label>Seminar Room 3</label>
+                                <label htmlFor="seminarRoom3">Seminar Room 3</label>
                             </div>
                             <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="plaza"
                                     name="plaza"
                                     checked={adminBuilding.plaza}
                                     onChange={(e) =>
@@ -796,11 +820,12 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         })
                                     }
                                 />
-                                <label>Plaza</label>
+                                <label htmlFor="plaza">Plaza</label>
                             </div>
                             <div className="CheckContainer">
                                 <input
                                     type="text"
+                                    id="otherAdmin"
                                     name="otherAdmin"
                                     value={adminBuilding.otherAdmin}
                                     onChange={(e) =>
@@ -826,12 +851,13 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                             <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="chairs"
                                     name="chairs"
                                     value="chairs"
                                     checked={furnitures.chairs}
                                     onChange={handleFurnitureChange}
                                 />
-                                <label>Chairs</label>
+                                <label htmlFor="chairs">Chairs</label>
                                 <div style={{ width: "100%" }}>
                                     <div
                                         style={{
@@ -842,13 +868,14 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         <div style={{}}>
                                             <input
                                                 type="checkbox"
+                                                id="rabami"
                                                 name="rabami"
                                                 value="rabami"
                                                 checked={furnitures.rabami}
                                                 onChange={handleFurnitureChange}
                                                 disabled={!furnitures.chairs}
                                             />
-                                            <label>Rabami</label>
+                                            <label htmlFor="rabami">Rabami</label>
                                         </div>
                                         <input
                                             type="number"
@@ -864,13 +891,14 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                     <div>
                                         <input
                                             type="checkbox"
+                                            id="monobloc"
                                             name="monobloc"
                                             value="monobloc"
                                             checked={furnitures.monobloc}
                                             onChange={handleFurnitureChange}
                                             disabled={!furnitures.chairs}
                                         />
-                                        <label>Monobloc</label>
+                                        <label htmlFor="monobloc">Monobloc</label>
                                         <input
                                             type="number"
                                             name="monobloc"
@@ -885,13 +913,14 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                     <div>
                                         <input
                                             type="checkbox"
+                                            id="stool"
                                             name="stool"
                                             value="stool"
                                             checked={furnitures.stool}
                                             onChange={handleFurnitureChange}
                                             disabled={!furnitures.chairs}
                                         />
-                                        <label>Stool</label>
+                                        <label htmlFor="stool">Stool</label>
                                         <input
                                             type="number"
                                             name="stool"
@@ -908,23 +937,25 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                             <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="tables"
                                     name="tables"
                                     value="tables"
                                     checked={furnitures.tables}
                                     onChange={handleFurnitureChange}
                                 />
-                                <label>Tables</label>
+                                <label htmlFor="tables">Tables</label>
                                 <div>
                                     <div>
                                         <input
                                             type="checkbox"
+                                            id="trapezoid"
                                             name="trapezoid"
                                             value="trapezoid"
                                             checked={furnitures.trapezoid}
                                             onChange={handleFurnitureChange}
                                             disabled={!furnitures.tables}
                                         />
-                                        <label>Trapezoid</label>
+                                        <label htmlFor="trapezoid">Trapezoid</label>
                                         <input
                                             type="number"
                                             name="trapezoid"
@@ -939,13 +970,14 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                     <div>
                                         <input
                                             type="checkbox"
+                                            id="training"
                                             name="training"
                                             value="training"
                                             checked={furnitures.training}
                                             onChange={handleFurnitureChange}
                                             disabled={!furnitures.tables}
                                         />
-                                        <label>Training (long)</label>
+                                        <label htmlFor="training">Training (long)</label>
                                         <input
                                             type="number"
                                             name="training"
@@ -960,13 +992,14 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                     <div>
                                         <input
                                             type="checkbox"
+                                            id="round"
                                             name="round"
                                             value="round"
                                             checked={furnitures.round}
                                             onChange={handleFurnitureChange}
                                             disabled={!furnitures.tables}
                                         />
-                                        <label>Round (small, big)</label>
+                                        <label htmlFor="round">Round (small, big)</label>
                                         <input
                                             type="number"
                                             name="round"
@@ -981,13 +1014,14 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                     <div>
                                         <input
                                             type="checkbox"
+                                            id="foldable"
                                             name="foldable"
                                             value="foldable"
                                             checked={furnitures.foldable}
                                             onChange={handleFurnitureChange}
                                             disabled={!furnitures.tables}
                                         />
-                                        <label>Foldable (small)</label>
+                                        <label htmlFor="foldable">Foldable (small)</label>
                                         <input
                                             type="number"
                                             name="foldable"
@@ -1002,13 +1036,14 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                     <div>
                                         <input
                                             type="checkbox"
+                                            id="cocktail"
                                             name="cocktail"
                                             value="cocktail"
                                             checked={furnitures.cocktail}
                                             onChange={handleFurnitureChange}
                                             disabled={!furnitures.tables}
                                         />
-                                        <label>Cocktail</label>
+                                        <label htmlFor="cocktail">Cocktail</label>
                                         <input
                                             type="number"
                                             name="cocktail"
@@ -1027,9 +1062,10 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                         {/* Audio Visual */}
                         <div className="audio-visual">
                             <h3>Audio Visual</h3>
-                            <div>
+                            <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="tv"
                                     name="tv"
                                     value="tv"
                                     checked={telev.tv}
@@ -1040,7 +1076,7 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         }))
                                     }
                                 />
-                                <label>TV</label>
+                                <label htmlFor="tv">TV</label>
                                 <input
                                     type="number"
                                     className="quantity-input"
@@ -1049,27 +1085,28 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                     min={"0"}
                                 />
                             </div>
-                            <div>
+                            <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="computer"
                                     name="computer"
                                     value="computer"
                                     checked={device.computer}
                                     onChange={handleDeviceChange}
-                                    
                                 />
-                                <label>Computer</label>
+                                <label htmlFor="computer">Computer</label>
                                 <ul>
                                     <li>
                                         <input
                                             type="checkbox"
+                                            id="windows"
                                             name="windows"
                                             value="windows"
                                             checked={device.windows}
                                             onChange={handleDeviceChange}
                                             disabled={!device.computer}
                                         />
-                                        <label>Windows</label>
+                                        <label htmlFor="windows">Windows</label>
                                         <input
                                             type="number"
                                             name="windows"
@@ -1084,13 +1121,14 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                     <li>
                                         <input
                                             type="checkbox"
+                                            id="mac"
                                             name="mac"
                                             value="mac"
                                             checked={device.mac}
                                             onChange={handleDeviceChange}
                                             disabled={!device.computer}
                                         />
-                                        <label>Mac</label>
+                                        <label htmlFor="mac">Mac</label>
                                         <input
                                             type="number"
                                             name="mac"
@@ -1104,19 +1142,21 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                     </li>
                                 </ul>
                             </div>
-                            <div>
+                            <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="projector"
                                     name="projector"
                                     value="projector"
                                     checked={device.projector}
                                     onChange={handleDeviceChange}
                                 />
-                                <label>Projector</label>
+                                <label htmlFor="projector">Projector</label>
                                 <ul>
                                     <li>
                                         <input
                                             type="checkbox"
+                                            id="wired"
                                             name="wired"
                                             value="wired"
                                             checked={micQty.wired}
@@ -1128,7 +1168,7 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                             }
                                             disabled={!device.projector}
                                         />
-                                        <label>Wired Microphone</label>
+                                        <label htmlFor="wired">Wired Microphone</label>
                                         <input
                                             type="number"
                                             name="wired"
@@ -1143,6 +1183,7 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                     <li>
                                         <input
                                             type="checkbox"
+                                            id="wireless"
                                             name="wireless"
                                             value="wireless"
                                             checked={micQty.wireless}
@@ -1154,7 +1195,7 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                             }
                                             disabled={!device.projector}
                                         />
-                                        <label>Wireless Microphone</label>
+                                        <label htmlFor="wireless">Wireless Microphone</label>
                                         <input
                                             type="number"
                                             name="wireless"
@@ -1168,19 +1209,21 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                     </li>
                                 </ul>
                             </div>
-                            <div>
+                            <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="speaker"
                                     name="speaker"
                                     value="speaker"
                                     checked={device.speaker}
                                     onChange={handleDeviceChange}
                                 />
-                                <label>Portable Speaker</label>
+                                <label htmlFor="speaker">Portable Speaker</label>
                                 <ul>
                                     <li>
                                         <input
                                             type="checkbox"
+                                            id="small"
                                             name="small"
                                             value="small"
                                             checked={speakerQty.small}
@@ -1192,7 +1235,7 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                             }
                                             disabled={!device.speaker}
                                         />
-                                        <label>Small</label>
+                                        <label htmlFor="small">Small</label>
                                         <input
                                             type="number"
                                             name="small"
@@ -1207,6 +1250,7 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                     <li>
                                         <input
                                             type="checkbox"
+                                            id="big"
                                             name="big"
                                             value="big"
                                             checked={speakerQty.big}
@@ -1218,7 +1262,7 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                             }
                                             disabled={!device.speaker}
                                         />
-                                        <label>Big</label>
+                                        <label htmlFor="big">Big</label>
                                         <input
                                             type="number"
                                             name="big"
@@ -1237,9 +1281,10 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                         {/* Accessories */}
                         <div className="accessories">
                             <h3>Accessories/Others</h3>
-                            <div>
+                            <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="podium"
                                     name="podium"
                                     value="podium"
                                     checked={accessoriesQty.podium}
@@ -1250,7 +1295,7 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         }))
                                     }
                                 />
-                                <label>Podium</label>
+                                <label htmlFor="podium">Podium</label>
                                 <input
                                     type="number"
                                     name="podium"
@@ -1262,9 +1307,10 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                     disabled={!accessoriesQty.podium}
                                 />
                             </div>
-                            <div>
+                            <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="flags"
                                     name="flags"
                                     value="flags"
                                     checked={accessoriesQty.flags}
@@ -1275,7 +1321,7 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         }))
                                     }
                                 />
-                                <label>Flags</label>
+                                <label htmlFor="flags">Flags</label>
                                 <input
                                     type="number"
                                     name="flags"
@@ -1287,9 +1333,10 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                     disabled={!accessoriesQty.flags}
                                 />
                             </div>
-                            <div>
+                            <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="extensionWires"
                                     name="extensionWires"
                                     value="extensionWires"
                                     checked={accessoriesQty.extensionWires}
@@ -1300,7 +1347,7 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         }))
                                     }
                                 />
-                                <label>Extension Wires</label>
+                                <label htmlFor="extensionWires">Extension Wires</label>
                                 <input
                                     type="number"
                                     name="extensionWires"
@@ -1312,9 +1359,10 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                     disabled={!accessoriesQty.extensionWires}
                                 />
                             </div>
-                            <div>
+                            <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="speakerStand"
                                     name="speakerStand"
                                     value="speakerStand"
                                     checked={accessoriesQty.speakerStand}
@@ -1325,7 +1373,7 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         }))
                                     }
                                 />
-                                <label>Speaker Stand</label>
+                                <label htmlFor="speakerStand">Speaker Stand</label>
                                 <input
                                     type="number"
                                     name="speakerStand"
@@ -1337,9 +1385,10 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                     disabled={!accessoriesQty.speakerStand}
                                 />
                             </div>
-                            <div>
+                            <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="micStand"
                                     name="micStand"
                                     value="micStand"
                                     checked={accessoriesQty.micStand}
@@ -1350,7 +1399,7 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         }))
                                     }
                                 />
-                                <label>Mic Stand</label>
+                                <label htmlFor="micStand">Mic Stand</label>
                                 <input
                                     type="number"
                                     name="micStand"
@@ -1362,9 +1411,10 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                     disabled={!accessoriesQty.micStand}
                                 />
                             </div>
-                            <div>
+                            <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="mixer"
                                     name="mixer"
                                     value="mixer"
                                     checked={accessoriesQty.mixer}
@@ -1375,7 +1425,7 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         }))
                                     }
                                 />
-                                <label>Mixer</label>
+                                <label htmlFor="mixer">Mixer</label>
                                 <input
                                     type="number"
                                     name="mixer"
@@ -1387,9 +1437,10 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                     disabled={!accessoriesQty.mixer}
                                 />
                             </div>
-                            <div>
+                            <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="clicker"
                                     name="clicker"
                                     value="clicker"
                                     checked={accessoriesQty.clicker}
@@ -1400,7 +1451,7 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                         }))
                                     }
                                 />
-                                <label>Clicker</label>
+                                <label htmlFor="clicker">Clicker</label>
                                 <input
                                     type="number"
                                     name="clicker"
@@ -1412,13 +1463,14 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                                     disabled={!accessoriesQty.clicker}
                                 />
                             </div>
-                            <div>
+                            <div className="CheckContainer">
                                 <input
                                     type="checkbox"
+                                    id="internetAccess"
                                     name="internetAccess"
                                     value="Internet Access"
                                 />
-                                <label>Internet Access</label>
+                                <label htmlFor="internetAccess">Internet Access</label>
                             </div>
                         </div>
 
@@ -1428,6 +1480,7 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                             <div style={{ margin: "5px" }}>
                                 <input
                                     className="Input"
+                                    id="equipment1"
                                     name="equipment1"
                                     value={sportsEquipment.equipment1}
                                     onChange={(e) =>
@@ -1442,6 +1495,7 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                             <div style={{ margin: "5px" }}>
                                 <input
                                     className="Input"
+                                    id="equipment2"
                                     name="equipment2"
                                     value={sportsEquipment.equipment2}
                                     onChange={(e) =>
@@ -1456,6 +1510,7 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                             <div style={{ margin: "5px" }}>
                                 <input
                                     className="Input"
+                                    id="equipment3"
                                     name="equipment3"
                                     value={sportsEquipment.equipment3}
                                     onChange={(e) =>
@@ -1475,6 +1530,7 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                             <div style={{ margin: "5px" }}>
                                 <input
                                     className="Input"
+                                    id="other1"
                                     name="other1"
                                     value={otherEquipment.other1}
                                     onChange={(e) =>
@@ -1489,6 +1545,7 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                             <div style={{ margin: "5px" }}>
                                 <input
                                     className="Input"
+                                    id="other2"
                                     name="other2"
                                     value={otherEquipment.other2}
                                     onChange={(e) =>
@@ -1503,6 +1560,7 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                             <div style={{ margin: "5px" }}>
                                 <input
                                     className="Input"
+                                    id="other3"
                                     name="other3"
                                     value={otherEquipment.other3}
                                     onChange={(e) =>
@@ -1533,23 +1591,33 @@ const FacilitiesEquipments = ({ user, disableFacilitiesWindow }) => {
                     {/******************* Approval Section *******************/}
                     <div className="approval-section">
                         <div>
-                            <label>Prepared by:</label>
-                            <p>Requester</p>
+                            <label>
+                                Prepared by:&nbsp; <b>{requestorName}</b>
+                            </label>
+                            <label style={{ borderBottom: "none" }}>
+                                <p style={{ textAlign: "center" }}>Requester</p>
+                            </label>
                         </div>
                         <div>
                             <label style={{ display: "flex" }}>
-                                Recommended by: <b>{user.fullname}</b>
+                                Recommended by:&nbsp;&nbsp; <b>{user.fullname}</b>
                             </label>
 
-                            <p>Adviser/Principal/Pgm Chair/Dean/Dept. Head</p>
+                            <label style={{ borderBottom: "none" }}>
+                                <p style={{ textAlign: "center" }}>Adviser/Principal/Pgm Chair/Dean/Dept. Head</p>
+                            </label>
                         </div>
                         <div>
                             <label>Verified by:</label>
-                            <p>Laboratory Assistant</p>
+                            <label style={{ borderBottom: "none" }}>
+                                <p style={{ textAlign: "center" }}>Laboratory Assistant</p>
+                            </label>
                         </div>
                         <div>
                             <label>Approved by:</label>
-                            <p>IFO-TLF Officer</p>
+                            <label style={{ borderBottom: "none" }}>
+                                <p style={{ textAlign: "center" }}>IFO-TLF Officer</p>
+                            </label>
                         </div>
                     </div>
 

@@ -2,22 +2,69 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import FilterCase from "./FilterCase";
-import "./requestsStyle.css";
-import { MDBBadge, MDBBtn, MDBTable, MDBTableHead, MDBTableBody } from "mdb-react-ui-kit";
+import { MDBBadge } from "mdb-react-ui-kit";
+
 const TableHeader = styled.th`
     border: 1px solid;
     font-size: 24px;
     padding: 4px;
-    width: 150px;
-    margin: 0;
     text-align: center;
+    background-color: #f2f2f2;
 `;
 
 const TableCell = styled.td`
     border: 1px solid;
     padding: 4px;
     text-align: center;
-    font-size: ${(props) => props.fontSize || "14px"}; /* Default font size is 16px */
+    font-size: ${(props) => props.fontSize || "14px"};
+`;
+
+const LogsContainer = styled.section`
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    overflow-x: auto;
+    margin-left: 15vw;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: center;
+    }
+`;
+
+const LogsWrapper = styled.div`
+    margin-top: 20px;
+    width: auto;
+
+    @media (max-width: 768px) {
+        width: 90%;
+    }
+`;
+
+const TableWrapper = styled.div`
+    overflow-y: auto;
+    max-height: 80vh;
+`;
+
+const Table = styled.table`
+    width: 95%;
+    border-collapse: collapse;
+    font-size: 16px;
+    text-align: left;
+    min-width: 1200px;
+
+    @media (max-width: 768px) {
+        min-width: 100%;
+        display: block;
+        overflow-x: auto;
+    }
+`;
+
+const HorizontalLine = styled.div`
+    border-bottom: 1px solid lightgray;
+    width: 95%;
+    margin-bottom: 20px;
 `;
 
 const LogsComponent = () => {
@@ -37,7 +84,7 @@ const LogsComponent = () => {
             query.append("statuses", filter.statuses.join(","));
         }
         axios
-            .get(`http://192.168.254.113:4002/api/logs?${query.toString()}`)
+            .get(`http://10.10.4.44:4000/api/logs?${query.toString()}`)
             .then((response) => {
                 setLogs(response.data);
             })
@@ -167,25 +214,13 @@ const LogsComponent = () => {
 
     return (
         <>
-            <FilterCase onFilterChange={handleFilterChange} />
-
-            <section
-                style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    width: "100%",
-                    height: "100%",
-                }}
-            >
-                <div
-                    style={{
-                        marginTop: "50px",
-                        width: "auto",
-                    }}
-                >
-                    <h2 style={{ textAlign: "center" }}>Facility Usage Logs</h2>
-                    <div style={{ maxHeight: "80vh", height: "100%", overflowY: "scroll" }}>
-                        <table className="table">
+            <LogsContainer>
+                <LogsWrapper>
+                    <h2 style={{ textAlign: "center", padding: "10px" }}>Facility Usage Logs</h2>
+                    <HorizontalLine />
+                    <FilterCase onFilterChange={handleFilterChange} />
+                    <TableWrapper>
+                        <Table>
                             <thead>
                                 <tr>
                                     <TableHeader>Ticket</TableHeader>
@@ -199,39 +234,33 @@ const LogsComponent = () => {
                                     <TableHeader>Status</TableHeader>
                                     <TableHeader>Request Details</TableHeader>
                                     <TableHeader>Remarks </TableHeader>
-                                    <TableHeader>Actions</TableHeader>
+                                    {/* <TableHeader>Actions</TableHeader> */}
                                 </tr>
                             </thead>
-                            <tbody className="tableContent">
+                            <tbody>
                                 {logs.map((log) => (
                                     <tr key={log.id}>
-                                        <TableCell style={{ fontSize: "18px" }}>
-                                            {renderTicketType(log.ticket)}
+                                        <TableCell>{renderTicketType(log.ticket)}</TableCell>
+                                        <TableCell>{log.dept}</TableCell>
+                                        <TableCell>{renderValue(log.requestorName)}</TableCell>
+                                        <TableCell>{renderValue(log.DeptHead)}</TableCell>
+                                        <TableCell>{renderValue(log.purpose)}</TableCell>
+                                        <TableCell>{formatDate(log.dateOfFiling)}</TableCell>
+                                        <TableCell>{formatDate(log.dateOfUse)}</TableCell>
+                                        <TableCell>
+                                            {renderValue(log.timeOfUseStart)} - {renderValue(log.timeOfUseEnd)}
                                         </TableCell>
-                                        <TableCell style={{ fontSize: "18px" }}>{log.dept}</TableCell>
-                                        <TableCell style={{ fontSize: "18px" }}>
-                                            {renderValue(log.requestorName)}
-                                        </TableCell>
-                                        <TableCell style={{ fontSize: "18px" }}>{renderValue(log.DeptHead)}</TableCell>
-                                        <TableCell style={{ fontSize: "18px" }}>{renderValue(log.purpose)}</TableCell>
-                                        <TableCell style={{ fontSize: "18px" }}>
-                                            {formatDate(log.dateOfFiling)}
-                                        </TableCell>
-                                        <TableCell style={{ fontSize: "18px" }}>{formatDate(log.dateOfUse)}</TableCell>
-                                        <TableCell style={{ fontSize: "18px" }}>{renderValue(log.timeOfUseStart)} - {renderValue(log.timeOfUseEnd)}</TableCell>
-                                        <TableCell style={{ fontSize: "18px" }}>
-                                            {renderStatusBadge(renderValue(log.status))}
-                                        </TableCell>
-                                        <TableCell style={{ fontSize: "18px" }}>{renderRequestDetails(log)}</TableCell>
-                                        <TableCell style={{ fontSize: "18px" }}>{renderValue(log.remarks)}</TableCell>
-                                        <TableCell style={{ fontSize: "18px" }}>{/* Actions column empty */}</TableCell>
+                                        <TableCell>{renderStatusBadge(renderValue(log.status))}</TableCell>
+                                        <TableCell>{renderRequestDetails(log)}</TableCell>
+                                        <TableCell>{renderValue(log.remarks)}</TableCell>
+                                        {/* <TableCell>Actions column empty</TableCell> */}
                                     </tr>
                                 ))}
                             </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
+                        </Table>
+                    </TableWrapper>
+                </LogsWrapper>
+            </LogsContainer>
         </>
     );
 };

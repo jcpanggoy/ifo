@@ -1,29 +1,125 @@
 import React, { useState, useEffect } from "react";
+import styled from "styled-components";
 import axios from "axios";
-import { MDBBadge, MDBTable, MDBTableHead, MDBTableBody, MDBBtn } from "mdb-react-ui-kit";
+import { MDBBadge, MDBBtn } from "mdb-react-ui-kit";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./requestsStyle.css";
+
+const FullScreenContainer = styled.section`
+    width: auto;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin-left: 15vw;
+
+    @media screen and (max-width: 768px) {
+        margin-left: 0;
+        padding: 20px;
+    }
+`;
+
+const FullScreenWrapper = styled.div``;
+
+const HorizontalLine = styled.div`
+    border-bottom: 1px solid lightgray;
+    width: 100%;
+    margin-bottom: 20px;
+`;
+
+const DisapproveButton = styled.button`
+    background-color: #ab0f11;
+    color: white;
+    border: 0;
+    padding: 10px;
+    border-radius: 18px;
+    max-width: 130px;
+    width: 100%;
+
+    &:hover {
+        background-color: darkred;
+    }
+`;
+
+const ApproveButton = styled.button`
+    background-color: #144691;
+    color: white;
+    border: 0;
+    padding: 10px;
+    border-radius: 18px;
+    max-width: 100px;
+    width: 100%;
+
+    &:hover {
+        background-color: darkgreen;
+    }
+`;
+
+const ButtonContainer = styled.div`
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+`;
+
+const TableHeader = styled.th`
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    font-size: large;
+`;
+
+const StyledTable = styled.table`
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 16px;
+    text-align: left;
+
+    th,
+    td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+        font-size: large;
+    }
+
+    th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+
+    @media screen and (max-width: 768px) {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+
+        th,
+        td {
+            font-size: 12px;
+        }
+    }
+`;
+
+const Content = styled.div`
+    margin-left: 15vw;
+    padding: 20px;
+    box-sizing: border-box;
+    height: 100%;
+
+    @media screen and (max-width: 768px) {
+        margin-left: 0;
+        padding: 20px;
+    }
+`;
 
 const RequestsComponent = () => {
     const [requests, setRequests] = useState([]);
-    const [newRequest, setNewRequest] = useState({
-        date: "",
-        dateOfFile: "",
-        request: "",
-        dateRequested: "",
-        status: "Pending",
-        name: "",
-        departmentHead: "",
-        department: "",
-        remarks: "",
-    });
     const [disapproveIndex, setDisapproveIndex] = useState(null);
 
     useEffect(() => {
         axios
-            .get("http://192.168.254.113:4002/api/requests")
+            .get("http://10.10.4.44:4000/api/requests")
             .then((response) => {
-                console.log(response.data);
                 setRequests(response.data);
             })
             .catch((error) => {
@@ -33,7 +129,7 @@ const RequestsComponent = () => {
 
     const handleApprove = (id) => {
         axios
-            .post(`http://192.168.254.113:4002/api/requests/${id}/approve`)
+            .post(`http://10.10.4.44:4000/api/requests/${id}/approve`)
             .then((response) => {
                 const updatedRequests = requests.map((req) =>
                     req.id === id ? { ...req, status: "Approved", remarks: "" } : req
@@ -53,7 +149,7 @@ const RequestsComponent = () => {
         const request = requests.find((req) => req.id === id);
         const remarks = request.remarks;
         axios
-            .post(`http://192.168.254.113:4002/api/requests/${id}/disapprove`, {
+            .post(`http://10.10.4.44:4000/api/requests/${id}/disapprove`, {
                 remarks,
             })
             .then((response) => {
@@ -77,7 +173,7 @@ const RequestsComponent = () => {
 
     const RenderCarsQty = ({ carsQty }) => {
         if (!carsQty) {
-            return null; // Return null to render nothing if carsQty is not available
+            return null;
         }
 
         let parsedCarsQty;
@@ -85,13 +181,13 @@ const RequestsComponent = () => {
             parsedCarsQty = JSON.parse(carsQty);
         } catch (error) {
             console.error("Error parsing carsQty:", error);
-            return <p>Invalid data format</p>; // Handle JSON parse errors gracefully
+            return <p>Invalid data format</p>;
         }
 
         const carEntries = Object.entries(parsedCarsQty).filter(([type, models]) => models);
 
         if (carEntries.length === 0) {
-            return null; // Return null to render nothing if no valid car entries are found
+            return null;
         }
 
         return (
@@ -112,18 +208,13 @@ const RequestsComponent = () => {
     };
 
     const renderRequestDetails = (req) => {
-        // if (req.ticketType === 0) {
-        //     // Make sure this matches how you determine if a ticket is for facilities.
-        //     return null; // Do not display any details if it's a facilities ticket.
-        // }
-
         const parseAndFilter = (json) => {
             let parsedJson;
             try {
                 parsedJson = JSON.parse(json);
             } catch (error) {
                 console.error("JSON Parse error:", error);
-                return []; // Return an empty array on JSON parse error
+                return [];
             }
             return Object.entries(parsedJson).filter(([key, value]) => value);
         };
@@ -144,11 +235,6 @@ const RequestsComponent = () => {
             ...parseAndFilter(req.sportsEquipment),
             ...parseAndFilter(req.otherEquipment),
         ];
-
-        // if (req.carsQty && req.ticketType !== 0) {
-        //     // Check if carsQty exists and ticket is not for facilities
-        //     allDetails.push([<RenderCarsQty carsQty={req.carsQty} />]);
-        // }
 
         if (allDetails.length === 0) {
             return "N/A";
@@ -191,44 +277,30 @@ const RequestsComponent = () => {
     };
 
     return (
-        <section
-            style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                width: "auto",
-                fontSize: "14px",
-            }}
-        >
-            <h2 style={{ textAlign: "center", padding: "20px" }}>Requested Facilities</h2>
-            <div style={{ maxHeight: "80vh", height: "100%", overflowY: "scroll" }}>
-                <div
-                    style={{
-                        borderBottom: "1px solid lightgray",
-                        width: "100%",
-                        marginBottom: "20px",
-                    }}
-                ></div>
-                <MDBTable align="middle">
-                    <MDBTableHead>
+        <FullScreenContainer>
+            <FullScreenWrapper>
+                <h2 style={{ textAlign: "center", padding: "20px" }}>Requested Facilities</h2>
+                <HorizontalLine />
+
+                <StyledTable>
+                    <thead>
                         <tr>
-                            <th>Ticket</th>
-                            <th>Date of Filing</th>
-                            <th>Date of Use</th>
-                            <th>Time of Use</th>
-                            <th>Request</th>
-                            <th>Purpose</th>
-                            <th>Status</th>
-                            <th>Name</th>
-                            <th>Department</th>
-                            <th>Remarks</th>
-                            <th>Actions</th>
+                            <TableHeader>Ticket</TableHeader>
+                            <TableHeader>Date of Filing</TableHeader>
+                            <TableHeader>Date of Use</TableHeader>
+                            <TableHeader>Time of Use</TableHeader>
+                            <TableHeader>Request</TableHeader>
+                            <TableHeader>Purpose</TableHeader>
+                            <TableHeader>Status</TableHeader>
+                            <TableHeader>Name</TableHeader>
+                            <TableHeader>Department</TableHeader>
+                            <TableHeader>Remarks</TableHeader>
+                            <TableHeader>Actions</TableHeader>
                         </tr>
-                    </MDBTableHead>
-                    <MDBTableBody>
+                    </thead>
+                    <tbody>
                         {pendingRequests.map((req) => (
                             <tr key={req.id}>
-                                {console.log(req.ticket)}
                                 <td>
                                     <p className="fw-bold mb-1">{renderTicketType(req.ticket)}</p>
                                 </td>
@@ -239,13 +311,16 @@ const RequestsComponent = () => {
                                     <p className="fw-bold mb-1">{formatDate(req.dateOfUse)}</p>
                                 </td>
                                 <td>
-                                    <p className="fw-bold mb-1">{req.timeOfUseStart} - {req.timeOfUseEnd}</p>
+                                    <p className="fw-bold mb-1">
+                                        {req.timeOfUseStart} - {req.timeOfUseEnd}
+                                    </p>
                                 </td>
                                 <td>
-                                    {
-                                        req.ticket === 0 ? renderRequestDetails(req) : RenderCarsQty(req)
-                                        // renderRequestDetails(req)
-                                    }
+                                    {req.ticket === 0 ? (
+                                        renderRequestDetails(req)
+                                    ) : (
+                                        <RenderCarsQty carsQty={req.carsQty} />
+                                    )}
                                 </td>
                                 <td>
                                     <p className="fw-normal mb-1">{req.purpose}</p>
@@ -271,45 +346,11 @@ const RequestsComponent = () => {
                                 </td>
                                 <td>
                                     {req.status === "Pending" && (
-                                        <div className="button-container">
-                                            {/* <MDBBtn
-                                                className="me-1"
-                                                size="sm"
-                                                color="success"
-                                                onClick={() =>
-                                                    handleApprove(req.id)
-                                                }
-                                            >
-                                                Approve
-                                            </MDBBtn> */}
-                                            <button
-                                                style={{
-                                                    maxWidth: "100px",
-                                                    width: "140px",
-                                                    border: 0,
-                                                    padding: "10px",
-                                                    borderRadius: "18px",
-                                                    color: "white",
-                                                    backgroundColor: "darkgreen",
-                                                }}
-                                                onClick={() => handleApprove(req.id)}
-                                            >
-                                                Approve
-                                            </button>
-                                            <button
-                                                style={{
-                                                    maxWidth: "130px",
-                                                    width: "200px",
-                                                    border: 0,
-                                                    padding: "10px",
-                                                    borderRadius: "18px",
-                                                    color: "white",
-                                                    backgroundColor: "darkRed",
-                                                }}
-                                                onClick={() => handleDisapprove(req.id)}
-                                            >
+                                        <ButtonContainer>
+                                            <ApproveButton onClick={() => handleApprove(req.id)}>Approve</ApproveButton>
+                                            <DisapproveButton onClick={() => handleDisapprove(req.id)}>
                                                 Disapprove
-                                            </button>
+                                            </DisapproveButton>
                                             {disapproveIndex === req.id && (
                                                 <MDBBtn
                                                     className="me-1"
@@ -320,15 +361,15 @@ const RequestsComponent = () => {
                                                     Submit
                                                 </MDBBtn>
                                             )}
-                                        </div>
+                                        </ButtonContainer>
                                     )}
                                 </td>
                             </tr>
                         ))}
-                    </MDBTableBody>
-                </MDBTable>
-            </div>
-        </section>
+                    </tbody>
+                </StyledTable>
+            </FullScreenWrapper>
+        </FullScreenContainer>
     );
 };
 

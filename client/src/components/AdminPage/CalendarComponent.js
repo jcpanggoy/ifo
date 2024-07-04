@@ -3,62 +3,77 @@ import styled from "styled-components";
 import axios from "axios";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import CalendarModal from "./CalendarModal";
 
 const FullScreenContainer = styled.section`
-    width: 100%;
-    height: auto;
+    width: 100vw;
+    height: 100vh;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #f8f8f8; /* Light background */
+    flex-direction: column;
+    margin-left: 15vw;
+    @media screen and (max-width: 768px) {
+        margin-left: 0;
+        padding: 20px;
+    }
+`;
+
+const FullScreenWrapper = styled.div`
+    width: 100%;
 `;
 
 const StyledCalendar = styled(Calendar)`
-    width: 100%;
-    height: 100%;
+    /* width: 100%;
+    height: 100%; */
+    width: 98%;
+    /* max-width: 100%; */
+    /* border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 16px;
+    text-align: left; */
 
     .react-calendar {
-        background-color: #fff; /* Light background for calendar */
-        color: #000; /* Black text color */
+        background-color: #fff; // Light background for calendar
+        color: #090e35; // Black text color
         border: none;
         font-family: Arial, Helvetica, sans-serif;
     }
 
     .react-calendar__navigation button {
-        color: #000;
+        padding: 20px;
+        color: #090e35;
+        font-weight: bold;
     }
 
     .react-calendar__month-view__weekdays {
-        background-color: #f0f0f0;
-        color: #000;
+        background-color: #ab0f11;
+        color: #fff;
     }
 
     .react-calendar__month-view__days {
         display: grid !important;
-        grid-template-columns: repeat(7, 1fr); /* Ensure seven columns */
-        grid-template-rows: repeat(5, 1fr); /* Ensure five rows */
+        grid-template-columns: repeat(7, 1fr); // Ensure seven columns
+        grid-template-rows: repeat(5, 1fr); // Ensure five rows
     }
 
     .react-calendar__tile {
         background: #fff;
-        border: 1px solid #ddd;
+        border: 1px solid #ab0f11;
         border-radius: 4px;
-        color: #000;
+        color: #090e35;
         padding: 10px;
-        height: 120px; /* Increase height */
-        min-width: 120px; /* Increase width */
+        height: 120px; // Increase height
+        min-width: 120px; // Increase width
         box-sizing: border-box;
         position: relative;
     }
 
     .react-calendar__tile--now {
-        background: #e0e0e0;
+        background: #c49494;
+        color: #090e35;
     }
 
     .react-calendar__tile--active {
-        background: #c0c0c0;
-        color: #000;
+        background: #144691;
+        color: #fff;
     }
 
     .react-calendar__tile-content {
@@ -78,20 +93,14 @@ const StyledCalendar = styled(Calendar)`
     }
 
     .react-calendar__tile .content {
-        /* margin-top: 20px;  */
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        /* width: 100%;
-        height: 100%; */
     }
 
     .highlighted-tile {
-        /* background-color: #007bff; */
         color: #fff;
-        /* border: 1px solid #0056b3; */
-        /* border-radius: 4px; */
         height: 100%;
         width: 100%;
         display: flex;
@@ -111,7 +120,7 @@ const CalendarComponent = ({ sendDataToParent }) => {
 
     useEffect(() => {
         axios
-            .get("http://192.168.254.113:4002/api/requests?status=Approved")
+            .get("http://10.10.4.44:4000/api/requests?status=Approved")
             .then((response) => {
                 setAcceptedRequests(response.data);
             })
@@ -138,43 +147,52 @@ const CalendarComponent = ({ sendDataToParent }) => {
 
     return (
         <FullScreenContainer>
-            <StyledCalendar
-                value={value}
-                onChange={onChange}
-                calendarType="hebrew"
-                tileContent={({ date, view }) =>
-                    view === "month" && (
-                        <div
-                            className={`content ${getRequestsForDate(date).length > 0 ? "highlighted-tile" : ""}`}
-                            onClick={() => handleTileClick(date)}
-                        >
-                            {getRequestsForDate(date).map((request, index) => (
+            <FullScreenWrapper>
+                {/* <div style={{ width: "100%" }}> */}
+                <h2 style={{ textAlign: "center", padding: "20px" }}>Facility Booking Calendar</h2>
+                <div style={{ maxHeight: "80vh", overflowY: "auto" }}>
+                    <StyledCalendar
+                        value={value}
+                        onChange={onChange}
+                        calendarType="hebrew"
+                        tileContent={({ date, view }) =>
+                            view === "month" && (
                                 <div
-                                    key={index}
-                                    style={{
-                                        display: "flex",
-                                        borderRadius: "4px",
-                                        gap: "12px",
-                                        flexDirection: "column",
-                                        backgroundColor: "#007bff",
-                                        padding: "4px",
-                                    }}
+                                    className={`content ${
+                                        getRequestsForDate(date).length > 0 ? "highlighted-tile" : ""
+                                    }`}
+                                    onClick={() => handleTileClick(date)}
                                 >
-                                    <span>{request.dept}</span>
+                                    {getRequestsForDate(date).map((request, index) => (
+                                        <div
+                                            key={index}
+                                            style={{
+                                                display: "flex",
+                                                borderRadius: "4px",
+                                                gap: "12px",
+                                                flexDirection: "column",
+                                                backgroundColor: "darkgreen",
+                                                padding: "4px",
+                                            }}
+                                        >
+                                            <span>{request.dept}</span>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
-                    )
-                }
-                formatDay={(locale, date) => <div className="date">{date.getDate()} </div>}
-            />
-            {/* {isModalOpen && (
-                <CalendarModal
-                    handleCalendarModal={closeCalendarModal}
-                    requests={selectedDateRequests}
-                    selectedDate={selectedDate}
-                />
-            )} */}
+                            )
+                        }
+                        formatDay={(locale, date) => <div className="date">{date.getDate()} </div>}
+                    />
+                    {/* {isModalOpen && (
+                        <CalendarModal
+                            handleCalendarModal={closeCalendarModal}
+                            requests={selectedDateRequests}
+                            selectedDate={selectedDate}
+                        />
+                    )} */}
+                </div>
+                {/* </div> */}
+            </FullScreenWrapper>
         </FullScreenContainer>
     );
 };

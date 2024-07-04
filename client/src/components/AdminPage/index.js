@@ -6,23 +6,30 @@ import RequestsComponent from "./RequestsComponent";
 import CalendarComponent from "./CalendarComponent";
 import LogsComponent from "./LogsComponent";
 import CalendarModal from "./CalendarModal";
+import ConvertPdfModal from "./convertPdfModal";
 
 const Main = styled.main`
-    min-width: 100vw;
-    min-height: 100vh;
-`;
-
-const MainContainer = styled.div`
+    max-width: 100vw;
+    max-height: 100vh;
     width: 100%;
     height: 100%;
     display: flex;
+    background-color: rgb(248, 248, 248);
+`;
+
+const MainContainer = styled.div`
+    display: flex;
+    width: 100vw;
+    flex-direction: row;
+    /* width: max-content; */
 `;
 
 const AdminPage = () => {
-    const [logsActive, setLogActive] = useState(false);
-    const [requestActive, setRequestActive] = useState(true);
+    const [logsActive, setLogActive] = useState(true);
+    const [requestActive, setRequestActive] = useState(false);
     const [calendarActive, setCalendarActive] = useState(false);
     const [showCalendarModal, setShowCalendarModal] = useState(false);
+    const [showPdfModal, setShowPdfModal] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedDateRequests, setSelectedDateRequests] = useState([]);
 
@@ -54,6 +61,10 @@ const AdminPage = () => {
         setShowCalendarModal(true);
     };
 
+    const handlePdfModal = () => {
+        setShowPdfModal(!showPdfModal);
+    };
+
     return (
         <Main>
             {showCalendarModal && (
@@ -63,35 +74,28 @@ const AdminPage = () => {
                     selectedDate={selectedDate}
                 />
             )}
+
+            {showPdfModal && <ConvertPdfModal handlePdfModal={handlePdfModal} />}
             <MainContainer>
                 <SidebarComponent
                     openLogs={openLogs}
                     openCalendar={openCalendar}
                     openRequests={openRequests}
-                    activeItem={
-                        logsActive
-                            ? "logs"
-                            : calendarActive
-                            ? "calendar"
-                            : "requests"
-                    }
+                    activeItem={logsActive ? "logs" : calendarActive ? "calendar" : "requests"}
                 />
-                <div
+                {/* <div
                     style={{
                         display: "flex",
                         height: "100%",
                         width: "100%",
-                        justifyContent: "center",
+                        // justifyContent: "center",
+                        // backgroundColor: "#f8f8f8",
                     }}
-                >
-                    {requestActive && <RequestsComponent />}
-                    {calendarActive && (
-                        <CalendarComponent
-                            sendDataToParent={sendDataToParent}
-                        />
-                    )}
-                    {logsActive && <LogsComponent />}
-                </div>
+                > */}
+                {requestActive && <RequestsComponent />}
+                {calendarActive && <CalendarComponent sendDataToParent={sendDataToParent} />}
+                {logsActive && <LogsComponent />}
+                {/* </div> */}
             </MainContainer>
         </Main>
     );

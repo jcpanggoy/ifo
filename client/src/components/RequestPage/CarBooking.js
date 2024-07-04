@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./Requestpage.css";
 import logo from "../../img/MMCM_Logo.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBackspace } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 const CarBooking = ({ user, disableCarWindow }) => {
     const [requestorName, setRequestorName] = useState("");
@@ -101,13 +101,13 @@ const CarBooking = ({ user, disableCarWindow }) => {
             sportsEquipment: "",
             otherEquipment: "",
 
-            user: user.fullnaname,
+            user: user.fullname,
             ticket: 1,
             carsQty,
         };
 
         try {
-            const response = await fetch("http://192.168.254.113:4002/saveCRequest", {
+            const response = await fetch("http://10.10.4.44:4000/saveCRequest", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -133,37 +133,32 @@ const CarBooking = ({ user, disableCarWindow }) => {
     return (
         <div className="PageContainer">
             <div className="FormContainer">
-                <FontAwesomeIcon
-                    icon={faBackspace}
-                    style={{ position: "relative", justifySelf: "start", cursor: "pointer" }}
-                    size="xl"
-                    onClick={disableCarWindow}
-                />
-                <div className="grid-container">
-                    {/* Logo */}
-                    <div className="logo-container">
-                        <img
-                            src={logo}
-                            alt="Logo"
-                            style={{ width: "100px", height: "auto" }}
-                        />
-                    </div>
-                    {/* Revision No. and Date */}
-                    <div className="revision-container">
-                        <p style={{ margin: "0" }}>
-                            REVISION NO: <strong>002</strong>
-                        </p>
-                        <p style={{ margin: "0" }}>
-                            REVISION DATE: <strong>30-Aug-23</strong>
-                        </p>
-                    </div>
+                <div
+                    className="grid-container"
+                    style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        paddingBottom: "25px",
+                    }}
+                >
+                    <FontAwesomeIcon
+                        icon={faArrowLeft}
+                        style={{ cursor: "pointer", color: "#090E35", width: "100px", height: "40px" }}
+                        onClick={disableCarWindow}
+                    />
+                    <img
+                        src={logo}
+                        alt="Logo"
+                        style={{ width: "100px", height: "auto" }}
+                    />
                 </div>
 
                 <div className="grid-container">
                     <div className="requestForm">
                         <h1
                             style={{
-                                gridColumn: "1 /span 2",
+                                gridColumn: "1",
                                 textAlign: "center",
                                 textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
                             }}
@@ -172,7 +167,7 @@ const CarBooking = ({ user, disableCarWindow }) => {
                         </h1>
 
                         {/* Instructions */}
-                        <div>
+                        <div style={{ gridRow: "2 " }}>
                             <p className="instructions">
                                 1. This form must be accomplished in 3 copies prior to the use of any MMCM vehicles.{" "}
                                 <br />
@@ -267,7 +262,7 @@ const CarBooking = ({ user, disableCarWindow }) => {
                             <h3>Sedan</h3>
 
                             {/*---------- CIVIC -----------------*/}
-                            <div>
+                            <div className="CheckContainer">
                                 <input
                                     type="checkbox"
                                     name="sedan_civic"
@@ -289,7 +284,7 @@ const CarBooking = ({ user, disableCarWindow }) => {
                             {/* -------------------------------- */}
                             {/* ----------Corolla----------- */}
 
-                            <div>
+                            <div className="CheckContainer">
                                 <input
                                     type="checkbox"
                                     name="sedan_corolla"
@@ -309,7 +304,7 @@ const CarBooking = ({ user, disableCarWindow }) => {
                             </div>
 
                             {/* -------------------------------- */}
-                            <div>
+                            <div className="CheckContainer">
                                 <input
                                     type="checkbox"
                                     name="sedan_bmw"
@@ -332,7 +327,7 @@ const CarBooking = ({ user, disableCarWindow }) => {
                         {/* Van */}
                         <div className="sports-equipment">
                             <h3>Van</h3>
-                            <div>
+                            <div className="CheckContainer">
                                 <input
                                     type="checkbox"
                                     name="van_sienna"
@@ -350,7 +345,7 @@ const CarBooking = ({ user, disableCarWindow }) => {
                                     disabled={!carsQty.van.sienna.checked}
                                 />
                             </div>
-                            <div>
+                            <div className="CheckContainer">
                                 <input
                                     type="checkbox"
                                     name="van_odyssey"
@@ -368,7 +363,7 @@ const CarBooking = ({ user, disableCarWindow }) => {
                                     disabled={!carsQty.van.odyssey.checked}
                                 />
                             </div>
-                            <div>
+                            <div className="CheckContainer">
                                 <input
                                     type="checkbox"
                                     name="van_transit"
@@ -391,7 +386,7 @@ const CarBooking = ({ user, disableCarWindow }) => {
                         {/* Bus */}
                         <div className="sports-equipment">
                             <h3>Bus</h3>
-                            <div>
+                            <div className="CheckContainer">
                                 <input
                                     type="checkbox"
                                     name="bus_transitBus"
@@ -409,7 +404,7 @@ const CarBooking = ({ user, disableCarWindow }) => {
                                     disabled={!carsQty.bus.transitBus.checked}
                                 />
                             </div>
-                            <div>
+                            <div className="CheckContainer">
                                 <input
                                     type="checkbox"
                                     name="bus_express"
@@ -427,7 +422,7 @@ const CarBooking = ({ user, disableCarWindow }) => {
                                     disabled={!carsQty.bus.express.checked}
                                 />
                             </div>
-                            <div>
+                            <div className="CheckContainer">
                                 <input
                                     type="checkbox"
                                     name="bus_tLiner"
@@ -464,23 +459,33 @@ const CarBooking = ({ user, disableCarWindow }) => {
                     {/******************* Approval Section *******************/}
                     <div className="approval-section">
                         <div>
-                            <label>Prepared by:</label>
-                            <p>Requester</p>
+                            <label>
+                                Prepared by:&nbsp; <b>{requestorName}</b>
+                            </label>
+                            <label style={{ borderBottom: "none" }}>
+                                <p style={{ textAlign: "center" }}>Requester</p>
+                            </label>
                         </div>
                         <div>
                             <label style={{ display: "flex" }}>
-                                Recommended by: <b>{user.fullname}</b>
+                                Recommended by:&nbsp;&nbsp; <b>{user.fullname}</b>
                             </label>
 
-                            <p>Adviser/Principal/Pgm Chair/Dean/Dept. Head</p>
+                            <label style={{ borderBottom: "none" }}>
+                                <p style={{ textAlign: "center" }}>Adviser/Principal/Pgm Chair/Dean/Dept. Head</p>
+                            </label>
                         </div>
                         <div>
                             <label>Verified by:</label>
-                            <p>Laboratory Assistant</p>
+                            <label style={{ borderBottom: "none" }}>
+                                <p style={{ textAlign: "center" }}>Laboratory Assistant</p>
+                            </label>
                         </div>
                         <div>
                             <label>Approved by:</label>
-                            <p>IFO-TLF Officer</p>
+                            <label style={{ borderBottom: "none" }}>
+                                <p style={{ textAlign: "center" }}>IFO-TLF Officer</p>
+                            </label>
                         </div>
                     </div>
 

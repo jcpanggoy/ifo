@@ -11,10 +11,62 @@
     }
 }
 
-.CheckContainer {
+/* .CheckContainer {
     display: flex;
     align-items: center;
     margin-left: 30px;
+} */
+
+.CheckContainer {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+/* Hide the default checkbox */
+.CheckContainer input[type="checkbox"] {
+    display: none;
+}
+
+/* Create a custom checkbox */
+.CheckContainer input[type="checkbox"] + label:before {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #090e35;
+    border-radius: 4px;
+    margin-right: 10px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+/* Checkmark for the custom checkbox */
+.CheckContainer input[type="checkbox"]:checked + label:before {
+    background-color: #090e35;
+    border-color: #090e35;
+}
+
+/* Add a checkmark */
+.CheckContainer input[type="checkbox"]:checked + label:after {
+    content: "";
+    position: absolute;
+    width: 6px;
+    height: 12px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    top: 4px;
+    left: 7px;
+}
+
+/* Style the label */
+.CheckContainer label {
+    position: relative;
+    cursor: pointer;
+    padding-left: 30px;
+    display: inline-block;
 }
 
 .FormContainer {
@@ -38,6 +90,7 @@
     flex-direction: column;
     flex: 1;
     margin-bottom: 20px;
+    width: 100%;
 }
 
 .Label {
@@ -52,6 +105,7 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     height: 50px;
+    width: auto;
 }
 
 .PageContainer {
@@ -90,6 +144,15 @@
     grid-column: 1 / span 3;
     justify-items: center;
     display: grid;
+    grid-template-columns: auto auto;
+    margin: 0;
+    padding: 0;
+}
+
+.requestFormFacis {
+    grid-row-start: 1;
+    grid-column: 1 / span 3;
+    justify-items: center;
     grid-template-columns: auto auto;
     margin: 0;
     padding: 0;
@@ -153,7 +216,7 @@
 
 .admin-building-grid {
     display: grid;
-    grid-template-columns: 150px auto;
+    grid-template-columns: auto auto;
     grid-template-rows: 50px 50px 50px 50px;
     align-content: center;
     align-items: center;
@@ -253,6 +316,7 @@
     border-bottom: 1px solid lightgray;
     width: 95%;
     margin-bottom: 20px;
+    margin-left: 25px;
 }
 
 .quantity-input {

@@ -3,9 +3,16 @@ const mysql = require("mysql2");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const app = express();
-const port = 4002;
+const port = 4000;
+const crypto = require("crypto");
 
-app.use(cors());
+app.use(
+    cors({
+        origin: "*", // Allow all origins for development
+        methods: ["GET", "POST", "PUT", "DELETE"], // Allow specific HTTP methods
+        allowedHeaders: ["Content-Type", "Authorization"], // Allow specific headers
+    })
+);
 app.use(bodyParser.json());
 
 const db = mysql.createConnection({
@@ -22,28 +29,77 @@ db.connect((err) => {
     }
     console.log("Connected to database.");
 });
-
 app.post("/login", (req, res) => {
-    const { username, password } = req.body;
-    const sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+    let { username, password } = req.body;
+
+    // Ensure username and password are strings
+    if (typeof username !== "string" || typeof password !== "string") {
+        return res.status(400).json({ message: "Invalid input format" });
+    }
+
+    username = username.trim();
+    password = password.trim();
+
+    const sql = `SELECT * FROM users WHERE username = ? AND password = ?`;
 
     db.query(sql, [username, password], (err, results) => {
         if (err) {
+            console.error("Database query error:", err);
             return res.status(500).send(err);
         }
         if (results.length > 0) {
             const user = results[0];
             const isAdmin = user.admin === 1;
-            res.status(200).json({
-                message: "Login successful",
-                user: {
-                    username: user.username,
-                    fullname: user.fullname,
-                    isAdmin,
-                },
+
+            // Generate token
+            const token = crypto.randomBytes(16).toString("hex");
+            const expiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+            // Save token and expiry to database
+            const tokenSql = `UPDATE users SET token = ?, token_expiry = ? WHERE id = ?`;
+            db.query(tokenSql, [token, expiry, user.id], (err, tokenResults) => {
+                if (err) {
+                    console.error("Database update error:", err);
+                    return res.status(500).send(err);
+                }
+                console.log("Login successful for user:", username);
+                res.status(200).json({
+                    message: "Login successful",
+                    user: {
+                        username: user.username,
+                        fullname: user.fullname,
+                        isAdmin,
+                    },
+                    token,
+                    expiry,
+                });
             });
         } else {
+            console.log("Invalid username or password for user:", username);
             res.status(401).json({ message: "Invalid username or password" });
+        }
+    });
+});
+
+app.post("/validate_token", (req, res) => {
+    const { token } = req.body;
+    console.log(token);
+    const sql = "SELECT token_expiry FROM users WHERE token = ?";
+
+    db.query(sql, [token], (err, results) => {
+        if (err) {
+            console.error("Database query error:", err);
+            return res.status(500).send(err);
+        }
+        if (results.length > 0) {
+            const tokenExpiry = results[0].token_expiry;
+            if (new Date(tokenExpiry) > new Date()) {
+                res.status(200).json({ valid: true, expiry: tokenExpiry });
+            } else {
+                res.status(401).json({ valid: false, message: "Token expired" });
+            }
+        } else {
+            res.status(401).json({ valid: false, message: "Invalid token" });
         }
     });
 });
@@ -145,7 +201,7 @@ app.post("/saveCRequest", (req, res) => {
         DeptHead,
         ticket,
         carsQty
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     const values = [
         requestorName,
         dept,
@@ -259,7 +315,7 @@ app.post("/saveRequest", (req, res) => {
             DeptHead,
             ticket,
             carsQty
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     const values = [
         requestorName,
         dept,
@@ -371,5 +427,9 @@ app.get("/api/category_counts", (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`Server running on http://192.168.254.113:${port}`);
+    console.log(`Server running on http://10.10.4.44:${port}`);
+});
+
+app.post("/getUserFromToken", (req, res) => {
+    const sql = "";
 });

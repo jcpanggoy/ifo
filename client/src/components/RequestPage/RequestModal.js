@@ -4,9 +4,8 @@ import "./Requestpage.css";
 
 const RequestModal = ({ handleCar, handleEquipment }) => {
     const handleLogout = () => {
+        localStorage.removeItem("token");
         localStorage.removeItem("user");
-        localStorage.removeItem("loggedIn");
-        localStorage.removeItem("timeLeft");
 
         window.location.reload();
     };
