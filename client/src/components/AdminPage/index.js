@@ -21,7 +21,6 @@ const MainContainer = styled.div`
     display: flex;
     width: 100vw;
     flex-direction: row;
-    /* width: max-content; */
 `;
 
 const AdminPage = () => {

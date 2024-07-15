@@ -12,8 +12,8 @@ export const AuthProvider = ({ children }) => {
             const token = localStorage.getItem("token");
             if (token) {
                 try {
-                    const response = await fetch("http://10.10.4.44:4000/validate_token", {
-                        method: "POST",
+                    const response = await fetch("http://172.20.10.11:4000/validate_token", {
+                        method: "POSt",
                         headers: {
                             "Content-Type": "application/json",
                         },

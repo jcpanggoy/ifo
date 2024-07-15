@@ -23,8 +23,8 @@ const LogsContainer = styled.section`
     display: flex;
     justify-content: center;
     width: 100%;
-    height: 100vh;
-
+    height: 100%;
+    overflow-x: auto;
     margin-left: 15vw;
 
     @media (max-width: 768px) {
@@ -36,8 +36,6 @@ const LogsContainer = styled.section`
 const LogsWrapper = styled.div`
     margin-top: 20px;
     width: auto;
-    height: 80%;
-    overflow-y: scroll;
 
     @media (max-width: 768px) {
         width: 90%;
@@ -63,31 +61,10 @@ const Table = styled.table`
     }
 `;
 
-const Header = styled.h2`
-    text-align: center;
-    padding: 10px;
-`;
-
 const HorizontalLine = styled.div`
     border-bottom: 1px solid lightgray;
     width: 95%;
     margin-bottom: 20px;
-`;
-
-const TableRow = styled.tr``;
-
-const TableHead = styled.thead``;
-
-const TableBody = styled.tbody``;
-
-const Span = styled.span`
-    font-size: 14px;
-`;
-
-const RequestDetails = styled.body`
-    text-align: left;
-    display: flex;
-    flex-direction: column;
 `;
 
 const LogsComponent = () => {
@@ -225,13 +202,13 @@ const LogsComponent = () => {
         }
 
         return (
-            <RequestDetails style={{ textAlign: "left", display: "flex", flexDirection: "column" }}>
+            <div>
                 {allDetails.map(([key, value]) => (
-                    <Span key={key}>
+                    <div key={key}>
                         {key}: {typeof value === "boolean" ? "" : value}
-                    </Span>
+                    </div>
                 ))}
-            </RequestDetails>
+            </div>
         );
     };
 
@@ -239,13 +216,13 @@ const LogsComponent = () => {
         <>
             <LogsContainer>
                 <LogsWrapper>
-                    <Header>Facility Usage Logs</Header>
+                    <h2 style={{ textAlign: "center", padding: "10px" }}>Facility Usage Logs</h2>
                     <HorizontalLine />
                     <FilterCase onFilterChange={handleFilterChange} />
                     <TableWrapper>
                         <Table>
-                            <TableHead>
-                                <TableRow>
+                            <thead>
+                                <tr>
                                     <TableHeader>Ticket</TableHeader>
                                     <TableHeader>Department</TableHeader>
                                     <TableHeader>Requester Name</TableHeader>
@@ -257,11 +234,12 @@ const LogsComponent = () => {
                                     <TableHeader>Status</TableHeader>
                                     <TableHeader>Request Details</TableHeader>
                                     <TableHeader>Remarks </TableHeader>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
+                                    {/* <TableHeader>Actions</TableHeader> */}
+                                </tr>
+                            </thead>
+                            <tbody>
                                 {logs.map((log) => (
-                                    <TableRow key={log.id}>
+                                    <tr key={log.id}>
                                         <TableCell>{renderTicketType(log.ticket)}</TableCell>
                                         <TableCell>{log.dept}</TableCell>
                                         <TableCell>{renderValue(log.requestorName)}</TableCell>
@@ -275,9 +253,10 @@ const LogsComponent = () => {
                                         <TableCell>{renderStatusBadge(renderValue(log.status))}</TableCell>
                                         <TableCell>{renderRequestDetails(log)}</TableCell>
                                         <TableCell>{renderValue(log.remarks)}</TableCell>
-                                    </TableRow>
+                                        {/* <TableCell>Actions column empty</TableCell> */}
+                                    </tr>
                                 ))}
-                            </TableBody>
+                            </tbody>
                         </Table>
                     </TableWrapper>
                 </LogsWrapper>

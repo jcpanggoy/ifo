@@ -34,8 +34,6 @@ const Checkbox = styled.input`
     margin-right: 10px;
 `;
 
-const Label = styled.label``;
-
 const FilterCase = ({ onFilterChange }) => {
     const [departments, setDepartments] = useState([]);
     const [statuses, setStatuses] = useState([]);
@@ -108,9 +106,9 @@ const FilterCase = ({ onFilterChange }) => {
                             checked={selectedStatuses.includes(status.status)}
                             onChange={() => handleStatusChange(status.status)}
                         />
-                        <Label>
+                        <label>
                             {status.status} ({status.count})
-                        </Label>
+                        </label>
                     </CategoryItem>
                 ))}
             </CategoryList>

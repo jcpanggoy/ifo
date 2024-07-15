@@ -115,15 +115,17 @@ const Header = styled.h2`
     padding: 20px;
 `;
 
-const RequestsComponent = () => {
+const RequestsComponent = ({ user }) => {
     const [requests, setRequests] = useState([]);
     const [disapproveIndex, seTableDataisapproveIndex] = useState(null);
+    console.log(user.username);
 
     useEffect(() => {
         axios
-            .get("http://172.20.10.11:4000/api/requests")
+            .post("http://172.20.10.11:4000/api/requestsFilter", { dept: user.username })
             .then((response) => {
                 setRequests(response.data);
+                console.log(response.data);
             })
             .catch((error) => {
                 console.error("There was an error fetching the requests!", error);
@@ -132,10 +134,10 @@ const RequestsComponent = () => {
 
     const handleApprove = (id) => {
         axios
-            .post(`http://172.20.10.11:4000/api/requests/${id}/approve`, { status: "Approved" })
+            .post(`http://172.20.10.11:4000/api/requests/${id}/approve`, { status: "Pending" })
             .then((response) => {
                 const updatedRequests = requests.map((req) =>
-                    req.id === id ? { ...req, status: "Approved", remarks: "" } : req
+                    req.id === id ? { ...req, status: "Pending", remarks: "None" } : req
                 );
                 setRequests(updatedRequests);
             })
@@ -152,7 +154,7 @@ const RequestsComponent = () => {
         const request = requests.find((req) => req.id === id);
         const remarks = request.remarks;
         axios
-            .post(`http://172.20.10.11:4000/api/requests/${id}/disapprove`, {
+            .delete(`http://172.20.10.11:4000/api/requests/${id}/disapproveOten`, {
                 remarks,
             })
             .then((response) => {
@@ -172,7 +174,7 @@ const RequestsComponent = () => {
         setRequests(updatedRequests);
     };
 
-    const pendingRequests = requests.filter((req) => req.facultyApproved);
+    const pendingRequests = requests.filter((req) => req.status === "Pending");
 
     const RenderCarsQty = ({ carsQty }) => {
         if (!carsQty) {

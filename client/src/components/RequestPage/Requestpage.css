@@ -11,26 +11,47 @@
     }
 }
 
-/* .CheckContainer {
-    display: flex;
-    align-items: center;
-    margin-left: 30px;
-} */
-
 .CheckContainer {
     display: flex;
     align-items: center;
     margin-bottom: 10px;
     font-size: 16px;
+    position: relative;
 }
 
 /* Hide the default checkbox */
 .CheckContainer input[type="checkbox"] {
-    display: none;
+    /* display: none; */
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #090e35;
+    border-radius: 4px;
+    /* margin-right: 10px; */
+    box-sizing: border-box;
+    transition: all 0.3s ease;
 }
 
+.inputs-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.input-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.input-item input[type="number"] {
+    margin-left: 10px;
+}
+
+
 /* Create a custom checkbox */
-.CheckContainer input[type="checkbox"] + label:before {
+/* .CheckContainer input[type="checkbox"] + label:before {
     content: "";
     display: inline-block;
     width: 20px;
@@ -40,7 +61,7 @@
     margin-right: 10px;
     box-sizing: border-box;
     transition: all 0.3s ease;
-}
+} */
 
 /* Checkmark for the custom checkbox */
 .CheckContainer input[type="checkbox"]:checked + label:before {
@@ -65,8 +86,19 @@
 .CheckContainer label {
     position: relative;
     cursor: pointer;
-    padding-left: 30px;
+    padding-left: 20px;
+    padding-right: 20px;
     display: inline-block;
+}
+
+/* Disabled state */
+.CheckContainer input[type="checkbox"]:disabled + label:before {
+    border-color: #d3d3d3;
+    background-color: #f0f0f0;
+}
+
+.CheckContainer input[type="checkbox"]:disabled + label {
+    color: #d3d3d3;
 }
 
 .FormContainer {
@@ -106,6 +138,15 @@
     border-radius: 4px;
     height: 50px;
     width: auto;
+}
+.Input2 {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    height: 50px;
+    width: auto;
+    font-weight: bold;
 }
 
 .PageContainer {

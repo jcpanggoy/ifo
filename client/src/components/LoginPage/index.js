@@ -111,11 +111,11 @@ const LoginPage = () => {
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
     const navigate = useNavigate();
-    const { login, isLoggedIn, user, logout } = useAuth();
+    const { login, isLoggedIn, user } = useAuth();
 
     const handleLogin = async () => {
         try {
-            const response = await axios.post("http://10.10.4.44:4000/login", {
+            const response = await axios.post("http://172.20.10.11:4000/login", {
                 username: username.trim(), // Ensure no extra spaces
                 password: password.trim(),
             });
@@ -123,18 +123,17 @@ const LoginPage = () => {
             setMessage("Login successful");
             const { user, token, expiry } = response.data;
 
-            // Attach the token to the user object
             const userWithToken = { ...user, token };
 
-            // Store user and token in local storage
             localStorage.setItem("token", token);
             localStorage.setItem("user", JSON.stringify(userWithToken));
 
-            // Call login from AuthContext
             login(userWithToken, Math.floor((new Date(expiry) - new Date()) / 1000));
 
             if (user.isAdmin) {
                 navigate("/admin", { state: { user } });
+            } else if (user.isDeptHead) {
+                navigate("/deptHead", { state: { user } });
             } else {
                 navigate("/requestor", { state: { user } });
             }
@@ -145,23 +144,16 @@ const LoginPage = () => {
     };
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        console.log(token);
-
         if (isLoggedIn && user) {
             if (user.isAdmin) {
                 navigate("/admin", { state: { user } });
+            } else if (user.isDeptHead) {
+                navigate("/deptHead", { state: { user } });
             } else {
                 navigate("/requestor", { state: { user } });
             }
         }
     }, [isLoggedIn, user, navigate]);
-
-    // Logout function to be called on logout button click or other trigger
-    const handleLogout = () => {
-        logout();
-        navigate("/login"); // Redirect to login page after logging out
-    };
 
     return (
         <Body>

@@ -30,6 +30,8 @@ db.connect((err) => {
     console.log("Connected to database.");
 });
 app.post("/login", (req, res) => {
+    const sqlfind = `SELECT fullname FROM users WHERE fullname = ?} `;
+    // const sqlfind = `SELECT fullname FROM users WHERE `current.user dept == username.dept`} `;
     let { username, password } = req.body;
 
     // Ensure username and password are strings
@@ -50,6 +52,7 @@ app.post("/login", (req, res) => {
         if (results.length > 0) {
             const user = results[0];
             const isAdmin = user.admin === 1;
+            const isDeptHead = user.admin === 0;
 
             // Generate token
             const token = crypto.randomBytes(16).toString("hex");
@@ -62,13 +65,14 @@ app.post("/login", (req, res) => {
                     console.error("Database update error:", err);
                     return res.status(500).send(err);
                 }
-                console.log("Login successful for user:", username);
                 res.status(200).json({
                     message: "Login successful",
                     user: {
                         username: user.username,
                         fullname: user.fullname,
                         isAdmin,
+                        isDeptHead,
+                        dept: user.dept,
                     },
                     token,
                     expiry,
@@ -81,9 +85,41 @@ app.post("/login", (req, res) => {
     });
 });
 
+app.post("/api/requestsFilter", (req, res) => {
+    const userDept = req.body.dept;
+
+    const sql = "SELECT * FROM request WHERE dept = ? AND facultyApproved = 0";
+    db.query(sql, [userDept], (err, results) => {
+        if (err) {
+            console.error("Database query error:", err);
+            return res.status(500).send(err);
+        }
+        res.json(results);
+    });
+});
+
+app.post("/getDeanForUser", (req, res) => {
+    // const { username } = req.body;
+    const userDept = req.body.dept;
+
+    const sqlfind = `
+        SELECT fullname
+        FROM users
+        WHERE username = ?
+    `;
+
+    db.query(sqlfind, userDept, (err, results) => {
+        if (err) {
+            console.error("Database query error:", err);
+            return res.status(500).send(err);
+        }
+        res.status(200).json(results);
+    });
+});
+
 app.post("/validate_token", (req, res) => {
     const { token } = req.body;
-    console.log(token);
+
     const sql = "SELECT token_expiry FROM users WHERE token = ?";
 
     db.query(sql, [token], (err, results) => {
@@ -105,7 +141,6 @@ app.post("/validate_token", (req, res) => {
 });
 
 app.post("/saveCRequest", (req, res) => {
-    console.log(req);
     const {
         requestorName,
         dept,
@@ -355,7 +390,7 @@ app.post("/saveRequest", (req, res) => {
 
 // Endpoint to get requests
 app.get("/api/requests", (req, res) => {
-    db.query("SELECT * FROM request", (err, results) => {
+    db.query("SELECT * FROM request WHERE status = 'Pending'", (err, results) => {
         if (err) {
             return res.status(500).send(err);
         }
@@ -365,8 +400,9 @@ app.get("/api/requests", (req, res) => {
 
 app.post("/api/requests/:id/approve", (req, res) => {
     const { id } = req.params;
-    const sql = `UPDATE request SET status = 'Approved', remarks = '' WHERE id = ?`;
-    db.query(sql, [id], (err, result) => {
+    const { status } = req.body;
+    const sql = `UPDATE request SET remarks = '',status = ?, facultyApproved = '1' WHERE id = ?`;
+    db.query(sql, [status, id], (err, result) => {
         if (err) return res.status(500).send(err);
         res.json({ message: "Request approved", id });
     });
@@ -377,6 +413,15 @@ app.post("/api/requests/:id/disapprove", (req, res) => {
     const { remarks } = req.body;
     const sql = `UPDATE request SET status = 'Disapproved', remarks = ? WHERE id = ?`;
     db.query(sql, [remarks, id], (err, result) => {
+        if (err) return res.status(500).send(err);
+        res.json({ message: "Request disapproved", id });
+    });
+});
+
+app.delete("/api/requests/:id/disapproveOten", (req, res) => {
+    const { id } = req.params;
+    const sql = `DELETE FROM request WHERE id = ?`;
+    db.query(sql, [id], (err, result) => {
         if (err) return res.status(500).send(err);
         res.json({ message: "Request disapproved", id });
     });
@@ -426,10 +471,51 @@ app.get("/api/category_counts", (req, res) => {
     });
 });
 
-app.listen(port, () => {
-    console.log(`Server running on http://10.10.4.44:${port}`);
+app.post("/api/getCurrentDateSched", (req, res) => {
+    const { dateOfUse } = req.body;
+
+    const sql = `
+        SELECT schoolBuilding, adminBuilding, others, timeOfUseStart, timeOfUseEnd
+        FROM request
+            WHERE status = 'Approved'
+            AND dateOfUse = ?
+            AND (schoolBuilding IS NOT NULL AND schoolBuilding <> ''
+                OR adminBuilding IS NOT NULL AND adminBuilding <> ''
+                OR others IS NOT NULL AND others <> '')
+
+
+    `;
+
+    db.query(sql, [dateOfUse], (err, results) => {
+        if (err) {
+            console.error("Database query error:", err);
+            return res.status(500).send(err);
+        }
+        res.json(results);
+    });
 });
 
-app.post("/getUserFromToken", (req, res) => {
-    const sql = "";
+app.post("/api/getCurrentDateShedCar", (req, res) => {
+    const { dateOfUse } = req.body;
+
+    const sql = `
+        SELECT carsQty, timeOfUseStart, timeOfUseEnd
+            FROM request
+            WHERE status = 'Approved'
+            AND dateOfUse = ?
+            AND carsQty IS NOT NULL
+            AND carsQty <> ''
+    `;
+
+    db.query(sql, [dateOfUse], (err, results) => {
+        if (err) {
+            console.error("Database query error:", err);
+            return res.status(500).send(err);
+        }
+        res.json(results);
+    });
+});
+
+app.listen(port, () => {
+    console.log(`Server running on http://172.20.10.11:${port}`);
 });

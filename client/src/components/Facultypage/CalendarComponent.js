@@ -21,7 +21,14 @@ const FullScreenWrapper = styled.div`
 `;
 
 const StyledCalendar = styled(Calendar)`
+    /* width: 100%;
+    height: 100%; */
     width: 98%;
+    /* max-width: 100%; */
+    /* border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 16px;
+    text-align: left; */
 
     .react-calendar {
         background-color: #fff; // Light background for calendar
@@ -87,11 +94,9 @@ const StyledCalendar = styled(Calendar)`
 
     .react-calendar__tile .content {
         display: flex;
-        flex-grow: 1;
-        /* flex-direction: column;
-        justify-content: center; */
-        align-items: start;
-        margin: 8px 4px;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
     }
 
     .highlighted-tile {
@@ -104,16 +109,6 @@ const StyledCalendar = styled(Calendar)`
         font-size: 14px;
         flex-shrink: 1;
     }
-`;
-
-const Header = styled.h2`
-    text-align: center;
-    padding: 20px;
-`;
-
-const CalendarWrapper = styled.div`
-    max-height: 80vh;
-    overflow-y: auto;
 `;
 
 const CalendarComponent = ({ sendDataToParent }) => {
@@ -143,7 +138,7 @@ const CalendarComponent = ({ sendDataToParent }) => {
         setSelectedDateRequests(requestsForDate);
         setSelectedDate(date);
         setIsModalOpen(true);
-        sendDataToParent(date, requestsForDate);
+        sendDataToParent(date, requestsForDate); // Pass the selected date and requests to the parent
     };
 
     const closeCalendarModal = () => {
@@ -153,8 +148,9 @@ const CalendarComponent = ({ sendDataToParent }) => {
     return (
         <FullScreenContainer>
             <FullScreenWrapper>
-                <Header>Facility Booking Calendar</Header>
-                <CalendarWrapper>
+                {/* <div style={{ width: "100%" }}> */}
+                <h2 style={{ textAlign: "center", padding: "20px" }}>Facility Booking Calendar</h2>
+                <div style={{ maxHeight: "80vh", overflowY: "auto" }}>
                     <StyledCalendar
                         value={value}
                         onChange={onChange}
@@ -194,7 +190,8 @@ const CalendarComponent = ({ sendDataToParent }) => {
                             selectedDate={selectedDate}
                         />
                     )} */}
-                </CalendarWrapper>
+                </div>
+                {/* </div> */}
             </FullScreenWrapper>
         </FullScreenContainer>
     );

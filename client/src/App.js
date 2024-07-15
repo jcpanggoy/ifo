@@ -5,6 +5,7 @@ import LoginPage from "./components/LoginPage";
 import RequestPage from "./components/RequestPage";
 import AdminPage from "./components/AdminPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import FacultyAdmin from "./components/Facultypage";
 
 const App = () => {
     return (
@@ -24,6 +25,14 @@ const App = () => {
                         element={
                             <ProtectedRoute>
                                 <AdminPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/deptHead"
+                        element={
+                            <ProtectedRoute>
+                                <FacultyAdmin />
                             </ProtectedRoute>
                         }
                     />
